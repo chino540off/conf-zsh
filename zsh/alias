@@ -1,0 +1,9 @@
+# ls/df/du human readable
+alias ls='ls --color=auto -h'
+alias ll='ls -l'
+alias lla='ls -la'
+alias la='ls -a'
+alias diff='colordiff'
+alias vim="vim -O"
+alias df="df -h"
+alias ssh='ssh -o GSSAPIAuthentication=no'

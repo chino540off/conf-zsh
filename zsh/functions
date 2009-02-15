@@ -1,0 +1,12 @@
+# Functions
+
+proxy_switch()
+{
+  if [ -z "$http_proxy" ]; then
+    export ftp_proxy="http://detour_o:zb3=P)rd@proxies.epita.fr:3128"
+    export http_proxy="http://detour_o:zb3=P)rd@proxies.epita.fr:3128"
+  else
+    unset ftp_proxy
+    unset http_proxy
+  fi
+}
