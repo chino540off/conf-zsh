@@ -20,3 +20,4 @@ zstyle ':completion:*:processes' command 'ps -au$USER'
 
 # Correction
 setopt correctall
+setopt emacs
