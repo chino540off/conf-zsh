@@ -8,3 +8,5 @@ alias vim="vim -O"
 alias df="df -h"
 alias gitk="gitk --all"
 alias ssh='ssh -o GSSAPIAuthentication=no'
+
+alias grep='grep -in --color=always'
