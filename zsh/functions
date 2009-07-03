@@ -37,10 +37,10 @@ git_fetch_merge()
   done
 
   for br in `my_print $fetch_output | \grep -v 'new branch' | tr -s ' ' | cut -d' ' -f3`; do
-    if [ -n "`git br | grep $br`" ]; then
+    if [ -n "`git branch | grep $br`" ]; then
       my_print Merging $remote/$br in $br
       if [ "$br" != "$BRANCH" ]; then
-	git co $br
+	git checkout $br
       fi
       git merge $remote/$br
     else
@@ -49,5 +49,5 @@ git_fetch_merge()
     fi
   done
   my_print Return to $current_branch
-  git co $current_branch
+  git checkout $current_branch
 }
