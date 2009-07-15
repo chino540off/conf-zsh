@@ -1,4 +1,8 @@
 # Functions
+my_print()
+{
+  echo "######## $@ ########"
+}
 
 proxy_switch()
 {
@@ -9,4 +13,41 @@ proxy_switch()
     unset ftp_proxy
     unset http_proxy
   fi
+}
+
+#
+# $1: remote
+#
+git_fetch_merge()
+{
+  remote="$1"
+  current_branch=$BRANCH
+
+  if [ -z "$1" ]; then
+    remote='origin'
+  fi
+
+  my_print Fetching $remote ...
+  fetch_output=`git fetch $remote 2>&1 | \grep -- '->' | \grep -vE '^From'`
+  echo "$fetch_output"
+
+  for br in `my_print $fetch_output | \grep 'new branch' | tr -s ' ' | cut -d' ' -f5`; do
+    my_print Fetching new branch $br
+    git fetch $remote $br:$br
+  done
+
+  for br in `my_print $fetch_output | \grep -v 'new branch' | tr -s ' ' | cut -d' ' -f3`; do
+    if [ -n "`git branch | grep $br`" ]; then
+      my_print Merging $remote/$br in $br
+      if [ "$br" != "$BRANCH" ]; then
+	git checkout $br
+      fi
+      git merge $remote/$br
+    else
+      my_print Fetching new branch $br
+      git fetch $remote $br:$br
+    fi
+  done
+  my_print Return to $current_branch
+  git checkout $current_branch
 }

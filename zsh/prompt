@@ -56,7 +56,8 @@ __vcs_dir() {
   base_dir="$PWD"
   _path="%B%{$fg[$cpath]%}"
   _vcs="%b%{$fg[$cvcs]%}"
-  echo "${_vcs}${vcs:+($vcs)}${_path}${base_dir/$HOME/~}${_vcs}${vcs:+[$ref]${_path}${sub_dir}}"
+  pwd="${_vcs}${vcs:+($vcs)}${_path}${base_dir/$HOME/~}${_vcs}${vcs:+[$ref]${_path}${sub_dir}}"
+  export BRANCH="$ref"
 }
 
 autoload -U colors
@@ -76,7 +77,7 @@ timestamp="%(?..%B%{$fg[$cpath]%}Err %?%b$clr )%{$fg[$cpath]%}| $clr%{$fg[$ctime
 
 user="%B%{$fg[$cuser]%}%n"
 host="%B%{$fg[$chost]%}%m"
-pwd="$(__vcs_dir)"
+__vcs_dir
 backn="\\n"
 clr="%{$reset_color%}"
 
