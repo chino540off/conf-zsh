@@ -71,3 +71,6 @@ git_fetch_merge()
   checkout_output=`git checkout $current_branch 2>&1 | cat`
   my_print 3 "$checkout_output"
 }
+
+
+# vim:filetype=sh

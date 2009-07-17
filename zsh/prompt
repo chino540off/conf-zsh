@@ -101,3 +101,5 @@ case $TERM in
   ;;
 esac
 
+
+# vim:filetype=sh
