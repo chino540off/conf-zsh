@@ -33,6 +33,16 @@ my_print()
 }
 
 #
+# auto source
+#
+auto_source()
+{
+  br=`cd ~/.zsh; echo -n $BRANCH`
+  my_print 1 "Sourcing my $br conf."
+  source ~/.zshrc
+}
+
+#
 # $1: remote
 #
 git_fetch_merge()
