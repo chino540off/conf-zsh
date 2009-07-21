@@ -55,7 +55,7 @@ git_fetch_merge()
   fi
 
   my_print 1 "Fetching $remote ..."
-  fetch_output=`git fetch $remote 2>&1 | \grep -- '->' | \grep -vE '^From'`
+  fetch_output=`git fetch $remote 2>&1 | \grep -- '->' | \grep -vE '^From' | \grep -v 'new tag'`
   my_print 2 "$fetch_output"
 
   my_print 1 "Merge works ..."
