@@ -37,7 +37,10 @@ my_print()
 #
 auto_source()
 {
-  br=`cd ~/.zsh; echo -n $BRANCH`
+  cd ~/conf
+  br=$(git symbolic-ref HEAD || git-name-rev --name-only HEAD 2>/dev/null)
+  br=${br#refs/heads/}
+  cd - > /dev/null 2>&1
   my_print 1 "Sourcing my $br conf."
   source ~/.zshrc
 }
