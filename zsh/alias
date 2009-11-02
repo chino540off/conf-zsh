@@ -10,3 +10,6 @@ alias gitk="gitk --all"
 alias ssh='ssh -o GSSAPIAuthentication=no'
 
 alias grep='grep -in --color=always'
+
+
+# vim:filetype=sh

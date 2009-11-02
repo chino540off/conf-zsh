@@ -1,18 +1,48 @@
 # Functions
+TEST_RED="\033[31;01m"
+TEST_GREEN="\033[32;01m"
+TEST_YELLOW="\033[33;01m"
+TEST_BLUE="\033[34;01m"
+TEST_NEUTRAL="\033[0m"
+
+#
+# $1: level
+# levels:
+#   - 1: blue
+#   - 2: green
+#   - 3: yellow
+#   - 4: red
+#
 my_print()
 {
-  echo "######## $@ ########"
+  level=$1
+  if [ -z "$1" ]; then
+    level='1'
+  fi
+  shift
+
+  if   [ $level -eq 1 ]; then
+    echo -e "${TEST_BLUE}$@${TEST_NEUTRAL}"
+  elif [ $level -eq 2 ]; then
+    echo -e "${TEST_GREEN}$@${TEST_NEUTRAL}" | sed -e 's/^/  /'
+  elif [ $level -eq 3 ]; then
+    echo -e "${TEST_YELLOW}$@${TEST_NEUTRAL}" | sed -e 's/^/    /'
+  elif [ $level -eq 4 ]; then
+    echo -e "${TEST_RED}$@${TEST_NEUTRAL}" | sed -e 's/^/      /'
+  fi
 }
 
-proxy_switch()
+#
+# auto source
+#
+auto_source()
 {
-  if [ -z "$http_proxy" ]; then
-    export ftp_proxy="http://detour_o:zb3=P)rd@proxies.epita.fr:3128"
-    export http_proxy="http://detour_o:zb3=P)rd@proxies.epita.fr:3128"
-  else
-    unset ftp_proxy
-    unset http_proxy
-  fi
+  cd ~/conf
+  br=$(git symbolic-ref HEAD || git-name-rev --name-only HEAD 2>/dev/null)
+  br=${br#refs/heads/}
+  cd - > /dev/null 2>&1
+  my_print 1 "Sourcing my $br conf."
+  source ~/.zshrc
 }
 
 #
@@ -27,27 +57,33 @@ git_fetch_merge()
     remote='origin'
   fi
 
-  my_print Fetching $remote ...
-  fetch_output=`git fetch $remote 2>&1 | \grep -- '->' | \grep -vE '^From'`
-  echo "$fetch_output"
+  my_print 1 "Fetching $remote ..."
+  fetch_output=`git fetch $remote 2>&1 | \grep -- '->' | \grep -vE '^From' | \grep -v 'new tag'`
+  my_print 2 "$fetch_output"
 
-  for br in `my_print $fetch_output | \grep 'new branch' | tr -s ' ' | cut -d' ' -f5`; do
-    my_print Fetching new branch $br
+  my_print 1 "Merge works ..."
+  for br in `echo $fetch_output | \grep 'new branch' | tr -s ' ' | cut -d' ' -f5`; do
+    my_print 2 "Fetching new branch $br"
     git fetch $remote $br:$br
   done
 
-  for br in `my_print $fetch_output | \grep -v 'new branch' | tr -s ' ' | cut -d' ' -f3`; do
+  for br in `echo $fetch_output | \grep -v 'new branch' | tr -s ' ' | cut -d' ' -f3`; do
     if [ -n "`git branch | grep $br`" ]; then
-      my_print Merging $remote/$br in $br
+      my_print 2 "Merging $remote/$br in $br"
       if [ "$br" != "$BRANCH" ]; then
 	git checkout $br
       fi
       git merge $remote/$br
     else
-      my_print Fetching new branch $br
+      my_print 2 "Fetching new branch $br"
       git fetch $remote $br:$br
     fi
   done
-  my_print Return to $current_branch
-  git checkout $current_branch
+
+  my_print 1 "Return to $current_branch"
+  checkout_output=`git checkout $current_branch 2>&1 | cat`
+  my_print 3 "$checkout_output"
 }
+
+
+# vim:filetype=sh

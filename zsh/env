@@ -49,3 +49,6 @@ export PATH="$OCTEON_ROOT/tools/bin:$OCTEON_ROOT/host/bin:$PATH"
 
 export ADK_ROOT="/work/projects/sdk-kernel.org/OCTEON-ADK"
 #export CROSS_COMPILE="mips64-octeon-linux-gnu-"
+
+
+# vim:filetype=sh
