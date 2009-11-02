@@ -18,16 +18,12 @@ __vcs_dir() {
   }
 
   git_dir() {
-    #base_dir=$(git-rev-parse --show-cdup 2>/dev/null) || return 1
-    base_dir="."
-    while [ ! -d "$base_dir/.git" ]; do base_dir="$base_dir/.."; [ $(readlink -f "${base_dir}") = "/" ] && return 1; done
-    base_dir=$(readlink -f "$base_dir")
-    sub_dir=$(git rev-parse --show-prefix)
-    sub_dir=${sub_dir%/}
-    # FIXED: -q = wtf ??
-    #ref=$(git-symbolic-ref HEAD || git-name-rev --name-only HEAD 2>/dev/null)
-    ref=$(git symbolic-ref HEAD || git-name-rev --name-only HEAD 2>/dev/null)
-    ref=${ref#refs/heads/}
+    ref=$(git branch 2> /dev/null | egrep '^\*' ) || return 1
+    ref=${ref/\* /}
+    sub_dir=$(git rev-parse --show-prefix 2> /dev/null)
+    sub_dir=${sub_dir/%\//}
+    base_dir=$(readlink -f `git rev-parse --git-dir 2> /dev/null` 2> /dev/null)
+    base_dir=${base_dir/\/.git/}
     vcs="git"
   }
 
