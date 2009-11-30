@@ -40,15 +40,4 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_HOME="$HOME/.local/share"
 export PAGER=most
 
-# Cavium CONF
-#export OCTEON_ROOT="/media/goinfre/OCTEON-SDK-1.6.0"
-export OCTEON_ROOT="/work/projects/sdk-kernel.org/OCTEON-SDK"
-export OCTEON_MODEL="OCTEON_CN38XX_PASS2"
-export OCTEON_CPPFLAGS_GLOBAL_ADD=' -DUSE_RUNTIME_MODEL_CHECKS=1 -DCVMX_ENABLE_PARAMETER_CHECKING=0 -DCVMX_ENABLE_CSR_ADDRESS_CHECKING=0 -DCVMX_ENABLE_POW_CHECKS=0'
-export PATH="$OCTEON_ROOT/tools/bin:$OCTEON_ROOT/host/bin:$PATH"
-
-export ADK_ROOT="/work/projects/sdk-kernel.org/OCTEON-ADK"
-#export CROSS_COMPILE="mips64-octeon-linux-gnu-"
-
-
 # vim:filetype=sh
