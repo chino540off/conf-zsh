@@ -85,5 +85,14 @@ git_fetch_merge()
   my_print 3 "$checkout_output"
 }
 
+vim()
+{
+  if [ $# -eq 1 -o $# -eq 0 ]; then
+    vim $@
+  else
+    vim -O2 $@
+  fi
+}
+
 
 # vim:filetype=sh

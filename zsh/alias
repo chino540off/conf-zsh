@@ -4,7 +4,7 @@ alias ll='ls -l'
 alias lla='ls -la'
 alias la='ls -a'
 alias diff='colordiff'
-alias vim="vim -O"
+#alias vim="vim -O2"
 alias df="df -h"
 alias gitk="gitk --all"
 alias ssh='ssh -o GSSAPIAuthentication=no'
