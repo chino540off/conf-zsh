@@ -96,39 +96,46 @@ v()
 
 rppush ()
 {
-	repo forall $@ -c 'git push $REPO_REMOTE $REPO_RREV:$REPO_RREV'
+  repo forall $@ -c 'git push $REPO_REMOTE $REPO_RREV:$REPO_RREV'
 }
+
 rpfetch ()
 {
-	nb=$#
-	projects=""
-	remote=""
-	while [ $nb -gt 0 ]; do
-		if [ "$1" = "--remote" -o "$1" = "-r" ]; then
-			shift
-			remote=$1
-			nb=$(( $nb - 1 ))
-		else
-			projects="$projects $1"
-		fi
-		shift
-		nb=$(( $nb - 1 ))
-	done
+  nb=$#
+  projects=""
+  remote=""
+  while [ $nb -gt 0 ]; do
+    if [ "$1" = "--remote" -o "$1" = "-r" ]; then
+      shift
+	remote=$1
+	nb=$(( $nb - 1 ))
+    else
+      projects="$projects $1"
+    fi
+    shift
+    nb=$(( $nb - 1 ))
+  done
 
-	if [ ! -z "$remote" ]; then
-		repo forall $projects -c "git fetch $remote"
-	else
-		repo forall $projects -c 'git fetch $REPO_REMOTE'
-	fi
+  if [ ! -z "$remote" ]; then
+    repo forall $projects -c "echo Fetching \$REPO_PROJECT ...; git fetch $remote"
+  else
+    repo forall $projects -c 'git fetch $REPO_REMOTE'
+  fi
 }
 
 rpmerge ()
 {
-	repo forall $@ -c 'git merge $REPO_REMOTE/$REPO_RREV'
+  repo forall $@ -c 'git merge $REPO_REMOTE/$REPO_RREV'
 }
+
 rpinitbr ()
 {
-	repo forall $@ -c 'git checkout -b $REPO_RREV $REPO_REMOTE/$REPO_RREV --track'
+  repo forall $@ -c 'git checkout -b $REPO_RREV $REPO_REMOTE/$REPO_RREV --track'
+}
+
+rpst ()
+{
+  repo status $@
 }
 
 # vim:filetype=sh
