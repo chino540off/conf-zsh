@@ -125,7 +125,28 @@ rpfetch ()
 
 rpmerge ()
 {
-  repo forall $@ -c 'git merge $REPO_REMOTE/$REPO_RREV'
+  nb=$#
+  projects=""
+  remote=""
+  while [ $nb -gt 0 ]; do
+    if [ "$1" = "--remote" -o "$1" = "-r" ]; then
+      shift
+	remote=$1
+	nb=$(( $nb - 1 ))
+    else
+      projects="$projects $1"
+    fi
+    shift
+    nb=$(( $nb - 1 ))
+  done
+
+  echo $projects
+
+  if [ ! -z "$remote" ]; then
+    repo forall $projects -c "echo Merging \$REPO_PROJECT ...; git merge $remote/\$REPO_RREV"
+  else
+    repo forall $projects -c 'git merge $REPO_REMOTE/$REPO_RREV'
+  fi
 }
 
 rpinitbr ()
