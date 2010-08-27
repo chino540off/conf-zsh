@@ -48,7 +48,7 @@ __vcs_dir() {
 
   git_dir ||
   svn_dir ||
-  hg_dir ||
+  #hg_dir ||
   base_dir="$PWD"
   _path="%B%{$fg[$cpath]%}"
   _vcs="%b%{$fg[$cvcs]%}"

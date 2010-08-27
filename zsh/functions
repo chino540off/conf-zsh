@@ -96,7 +96,7 @@ v()
 
 rppush ()
 {
-  repo forall $@ -c 'git push $REPO_REMOTE $REPO_RREV:$REPO_RREV'
+  repo forall $@ -c 'source ~/.zsh/functions; my_print 1 Pushing $REPO_PROJECT ...; git push $REPO_REMOTE $REPO_RREV:$REPO_RREV'
 }
 
 rpfetch ()
@@ -117,9 +117,9 @@ rpfetch ()
   done
 
   if [ ! -z "$remote" ]; then
-    repo forall $projects -c "echo Fetching \$REPO_PROJECT ...; git fetch $remote"
+    repo forall $projects -c "source ~/.zsh/functions; my_print 1 Fetching \$REPO_PROJECT ...; git fetch $remote"
   else
-    repo forall $projects -c 'git fetch $REPO_REMOTE'
+    repo forall $projects -c 'source ~/.zsh/functions; my_print 1 Fetching $REPO_PROJECT ...; git fetch $REPO_REMOTE'
   fi
 }
 
@@ -143,9 +143,9 @@ rpmerge ()
   echo $projects
 
   if [ ! -z "$remote" ]; then
-    repo forall $projects -c "echo Merging \$REPO_PROJECT ...; git merge $remote/\$REPO_RREV"
+    repo forall $projects -c "source ~/.zsh/functions; my_print 1 Merging \$REPO_PROJECT ...; git merge $remote/\$REPO_RREV"
   else
-    repo forall $projects -c 'git merge $REPO_REMOTE/$REPO_RREV'
+    repo forall $projects -c 'source ~/.zsh/functions; my_print 1 Merging $REPO_PROJECT ...; git merge $REPO_REMOTE/$REPO_RREV'
   fi
 }
 
