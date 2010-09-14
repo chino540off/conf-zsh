@@ -1,66 +1,40 @@
 # Prompt file
 
-chost="green"
-#chost="lightblue"
-cpath="blue"
-ctime="yellow"
-cvcs="green"
-crev="yellow"
-
-__vcs_dir() {
-  local vcs base_dir sub_dir ref
-
-  sub_dir() {
-    local sub_dir
-    sub_dir=$(readlink -f "${PWD}")
-    sub_dir=${sub_dir#$1}
-    echo ${sub_dir#/}
-  }
-
-  git_dir() {
-    ref=$(git branch 2> /dev/null | egrep '^\*' ) || return 1
-    ref=${ref/\* /}
-    sub_dir=$(git rev-parse --show-prefix 2> /dev/null)
-    sub_dir=${sub_dir/%\//}
-    base_dir=$(readlink -f `git rev-parse --git-dir 2> /dev/null` 2> /dev/null)
-    base_dir=${base_dir/\/.git/}
-    vcs="git"
-  }
-
-  svn_dir() {
-    [ -d ".svn" ] || return 1
-    base_dir="."
-    while [ -d "$base_dir/../.svn" ]; do base_dir="$base_dir/.."; done
-    base_dir=$(readlink -f "$base_dir")
-    sub_dir=$(sub_dir "${base_dir}")
-    ref=$(svn info "$base_dir" | awk '/^URL/ { sub(".*/","",$0); r=$0 } /^Revision/ { sub("[^0-9]*","",$0); print r":"$0 }')
-    vcs="svn"
-  }
-
-  hg_dir() {
-    base_dir="."
-    while [ ! -d "$base_dir/.hg" ]; do base_dir="$base_dir/.."; [ $(readlink -f "${base_dir}") = "/" ] && return 1; done
-    base_dir=$(readlink -f "$base_dir")
-    sub_dir=$(sub_dir "${base_dir}")
-    ref=$(< "${base_dir}/.hg/branch")
-    vcs="hg"
-  }
-
-  git_dir ||
-  svn_dir ||
-  #hg_dir ||
-  base_dir="$PWD"
-  _path="%B%{$fg[$cpath]%}"
-  _vcs="%b%{$fg[$cvcs]%}"
-
-  pwd="${_vcs}${vcs:+($vcs)}${_path}${base_dir/$HOME/~}${_vcs}${vcs:+[$ref]${_path}${sub_dir}}"
-  local tmp="${vcs:+($vcs)}${base_dir/$HOME/~}${vcs:+[$ref]${sub_dir}}"
-  (( pwdsize = ${#${tmp}} + 6))
-  export BRANCH="$ref"
-}
-
+# init
 autoload -U colors
+autoload -Uz vcs_info
 colors
+
+# set some colors
+
+for COLOR in RED GREEN YELLOW WHITE BLACK CYAN BLUE; do
+  eval PR_$COLOR='%{$fg[${(L)COLOR}]%}'        
+  eval PR_BRIGHT_$COLOR='%{$fg_bold[${(L)COLOR}]%}'
+done                                                
+PR_RESET="%{${reset_color}%}";  
+
+# set formats
+# %b - branchname
+# %u - unstagedstr (see below)
+# %c - stangedstr (see below)
+# %a - action (e.g. rebase-i)
+# %R - repository path
+# %S - path in the repository
+FMT_VCS="${PR_GREEN}(%s)${PR_RESET}"
+FMT_BRANCH="${PR_GREEN}[%b%u%c]${PR_RESET}"				# e.g. master¹²
+FMT_ACTION="(${PR_CYAN}%a${PR_RESET}%)"   				# e.g. (rebase-i)
+FMT_PATH_PART1="${PR_BRIGHT_BLUE}%R${PR_RESET}"
+FMT_PATH_PART2="${PR_BRIGHT_BLUE}%S${PR_RESET}"
+FMT_PATH="${FMT_VCS}${FMT_PATH_PART1}${FMT_BRANCH}${FMT_PATH_PART2}"	# e.g. ~/repo/subdir
+ 
+# check-for-changes can be really slow.
+# you should disable it, if you work with large repositories   
+zstyle ':vcs_info:*:prompt:*' check-for-changes true
+zstyle ':vcs_info:*:prompt:*' unstagedstr '¹'  				# display ¹ if there are unstaged changes
+zstyle ':vcs_info:*:prompt:*' stagedstr '²'    				# display ² if there are staged changes
+zstyle ':vcs_info:*:prompt:*' actionformats ""		"${FMT_PATH}"
+zstyle ':vcs_info:*:prompt:*' formats       ""		"${FMT_PATH}"
+zstyle ':vcs_info:*:prompt:*' nvcsformats   ""		"%~"   
 
 setopt extended_glob
 
@@ -77,44 +51,6 @@ PR_ULCORNER=${altchar[l]:--}
 PR_LLCORNER=${altchar[m]:--}
 PR_LRCORNER=${altchar[j]:--}
 PR_URCORNER=${altchar[k]:--}
-
-precmd() {
-
-__vcs_dir
-
-local TERMWIDTH
-(( TERMWIDTH = ${COLUMNS} - 2 ))
-
-
-###
-# Truncate the path if it's too long.
-
-PR_FILLBAR=""
-PR_PWDLEN=""
-
-local promptsize=${#${(%):---(%n@%m:%l)---()--}}
-
-if [[ "$promptsize + $pwdsize" -gt $TERMWIDTH ]]; then
-        ((PR_PWDLEN=$TERMWIDTH - $promptsize))
-else
-	PR_FILLBAR="\${(l.(($TERMWIDTH - $pwdsize))..${PR_EMPTY_HBAR}.)}"
-fi
-
-if [ "$USER" != "root" -a "$USERNAME" != "root" ]; then 
-	cuser="white"
-else
-	cuser="red"
-fi
-
-prompt=">"
-time="%H:%M"
-timestamp="%(?..%B%{$fg[$cpath]%}Err %?%b$clr )%{$fg[$cpath]%}| $clr%{$fg[$ctime]%}%B%D{$time}"
-
-user="%B%{$fg[$cuser]%}%n"
-host="%B%{$fg[$chost]%}%m"
-backn="\\n"
-clr="%{$reset_color%}"
-
 little_line=$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT$clr
 big_line=$PR_SHIFT_IN$PR_HBAR${(e)PR_FILLBAR}$clr
 up_left_corner=$PR_SHIFT_IN$PR_ULCORNER$PR_HBAR$PR_SHIFT_OUT
@@ -122,18 +58,58 @@ up_right_corner=$PR_SHIFT_IN$PR_HBAR$PR_URCORNER$PR_SHIFT_OUT
 under_left_corner=$PR_SHIFT_IN$PR_LLCORNER$PR_HBAR$PR_SHIFT_OUT
 under_right_corner=$PR_SHIFT_IN$PR_LRCORNER$PR_SHIFT_OUT
 
-PS1="$up_left_corner(%{$pwd%}$clr)$big_line$up_right_corner
-$under_left_corner($user$clr@$host$clr)$little_line "
-RPS1="$little_line($timestamp$clr)$little_line$under_right_corner"
+function precmd()
+{
+  vcs_info 'prompt'
 
-# Term title
-case $TERM in
-  *xterm*|*rxvt*|(dt|k|E)term)
-    print -Pn "\e]0;%n@%m:%~\a"
-    #preexec () { print -Pn "\e]0;%n@%m:%~\a $1" }
-  ;;
-esac
+  # Term title
+  case $TERM in
+    *xterm*|*rxvt*|(dt|k|E)term)
+      print -Pn "\e]0;%n@%m:%~\a"
+      #preexec () { print -Pn "\e]0;%n@%m:%~\a $1" }
+    ;;
+  esac
 }
 
+function lprompt
+{
+  local brackets=$1
+  local color1=$2 
+  local color2=$3 
+   
+  local bracket_open="${color1}${brackets[1]}${PR_RESET}"
+  local bracket_close="${color1}${brackets[2]}"         
+  local at="${PR_BRIGHT_WHITE}@${PR_RESET}"                       
+
+  if [ "$USER" != "root" -a "$USERNAME" != "root" ]; then 
+    local user_host="${PR_BRIGHT_WHITE}%n${at}${PR_BRIGHT_GREEN}%m${PR_RESET}"
+  else
+    local user_host="${PR_BRIGHT_RED}%n${at}${PR_BRIGHT_GREEN}%m${PR_RESET}"
+  fi
+   
+  local vcs_cwd='${${vcs_info_msg_1_%%.}/$HOME/~}'
+  local cwd="${PR_BRIGHT_BLUE}${vcs_cwd}${PR_RESET}"
+  local my_prompt="${PR_BRIGHT_WHITE}>${PR_RESET}"
+   
+  PROMPT="$up_left_corner${PR_RESET}${bracket_open}${cwd}${bracket_close}$little_line
+$under_left_corner(${user_host}${PR_RESET})$little_line "
+} 
+
+function rprompt
+{
+  local brackets=$1
+  local color1=$2 
+  local color2=$3 
+   
+  local bracket_open="${color1}${brackets[1]}${PR_RESET}"
+  local bracket_close="${color1}${brackets[2]}${PR_RESET}"
+   
+  local time="%H:%M"
+  local timestamp="%(?..${PR_BRIGHT_RED}Err %?%b${PR_RESET} | )${PR_BRIGHT_YELLOW}%B%D{$time}"
+  RPROMPT="$little_line${PR_RESET}${bracket_open}${timestamp}${bracket_close}${PR_RESET}"
+}
+ 
+lprompt '()' $BR_BRIGHT_BLACK $PR_WHITE
+rprompt '()' $BR_BRIGHT_BLACK $PR_WHITE
 
 # vim:filetype=sh
