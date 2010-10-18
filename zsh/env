@@ -40,4 +40,4 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_HOME="$HOME/.local/share"
 export PAGER=most
 
-# vim:filetype=sh
+# vim:filetype=zsh

@@ -159,4 +159,4 @@ rpst ()
   repo status $@
 }
 
-# vim:filetype=sh
+# vim:filetype=zsh
