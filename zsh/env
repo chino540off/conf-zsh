@@ -29,6 +29,9 @@ unsetopt list_beep
   # ask confirmation for rm *
 unsetopt rm_star_silent
 
+  # enable IFS
+setopt sh_wordsplit
+
 export KANETON_PYTHON="/usr/bin/python"
 export KANETON_ARCHITECTURE="ia32/educational"
 export KANETON_PLATFORM="ibm-pc"

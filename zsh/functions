@@ -5,15 +5,16 @@ TEST_YELLOW="\033[33;01m"
 TEST_BLUE="\033[34;01m"
 TEST_NEUTRAL="\033[0m"
 
-#
+##############################
+# My Print
 # $1: level
 # levels:
 #   - 1: blue
 #   - 2: green
 #   - 3: yellow
 #   - 4: red
-#
-my_print()
+##############################
+function my_print()
 {
   level=$1
   if [ -z "$1" ]; then
@@ -32,10 +33,10 @@ my_print()
   fi
 }
 
-#
-# auto source
-#
-auto_source()
+##############################
+# Auto Source
+##############################
+function auto_source()
 {
   cd ~/conf
   br=$(git symbolic-ref HEAD || git-name-rev --name-only HEAD 2>/dev/null)
@@ -45,10 +46,11 @@ auto_source()
   source ~/.zshrc
 }
 
-#
+##############################
+# Git Fetch Merge
 # $1: remote
-#
-git_fetch_merge()
+##############################
+function git_fetch_merge()
 {
   remote="$1"
   current_branch=$BRANCH
@@ -85,7 +87,10 @@ git_fetch_merge()
   my_print 3 "$checkout_output"
 }
 
-v()
+##############################
+# ViM
+##############################
+function v()
 {
   if [ $# -eq 1 -o $# -eq 0 ]; then
     vim $@
@@ -94,12 +99,15 @@ v()
   fi
 }
 
-rppush ()
+##############################
+# Repo
+##############################
+function rppush ()
 {
   repo forall $@ -c 'source ~/.zsh/functions; my_print 1 Pushing $REPO_PROJECT ...; git push $REPO_REMOTE $REPO_RREV:$REPO_RREV'
 }
 
-rpfetch ()
+function rpfetch ()
 {
   nb=$#
   projects=""
@@ -123,7 +131,7 @@ rpfetch ()
   fi
 }
 
-rpmerge ()
+function rpmerge ()
 {
   nb=$#
   projects=""
@@ -149,14 +157,65 @@ rpmerge ()
   fi
 }
 
-rpinitbr ()
+function rpinitbr ()
 {
   repo forall $@ -c 'git checkout -b $REPO_RREV $REPO_REMOTE/$REPO_RREV --track'
 }
 
-rpst ()
+function rpst ()
 {
   repo status $@
+}
+
+##############################
+# Bookmarks
+##############################
+if [ -z "$bmlist" ]; then
+  bmlist=""
+fi
+
+function bm ()
+{
+  export $1="`pwd`"
+  bmlist=`for i in $bmlist $1; do echo $i; done | sort -u`
+  export bmlist
+}
+
+function brm ()
+{
+  for j in $@; do
+    export $j=
+    bmlist=`for i in $bmlist; do if [ $i != $j ]; then echo $i; fi; done | sort -u`
+  done
+  export bmlist
+}
+
+function bl ()
+{
+  for i in $bmlist; do
+    p="echo \$${i}"
+    echo "	${TEST_GREEN}$i${TEST_NEUTRAL}#-->#${TEST_BLUE}`eval $p`${TEST_NEUTRAL}"
+  done | column -s \# -t
+}
+
+function bclear ()
+{
+  export bmlist=
+}
+
+function b ()
+{
+  p="echo \$$1"
+  if [ -z "`eval $p`" ]; then
+    echo unknown bookmark: $1
+  else
+    cd "`eval $p`"
+  fi
+}
+
+function _bookmark_completion ()
+{
+  reply=(`echo $bmlist | sed -re 's/ $//'`)
 }
 
 # vim:filetype=zsh
