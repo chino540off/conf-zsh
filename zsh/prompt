@@ -29,6 +29,7 @@ FMT_PATH="${FMT_VCS}${FMT_PATH_PART1}${FMT_BRANCH}${FMT_PATH_PART2}"	# e.g. ~/re
  
 # check-for-changes can be really slow.
 # you should disable it, if you work with large repositories   
+zstyle ':vcs_info:*:prompt:*' enable git svn hg
 zstyle ':vcs_info:*:prompt:*' check-for-changes true
 zstyle ':vcs_info:*:prompt:*' unstagedstr '¹'  				# display ¹ if there are unstaged changes
 zstyle ':vcs_info:*:prompt:*' stagedstr '²'    				# display ² if there are staged changes
