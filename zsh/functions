@@ -193,8 +193,13 @@ function brm ()
 function bl ()
 {
   for i in $bmlist; do
-    p="echo \$${i}"
-    echo "	${TEST_GREEN}$i${TEST_NEUTRAL}#-->#${TEST_BLUE}`eval $p`${TEST_NEUTRAL}"
+    local p="echo \$${i}"
+    local dir=`eval $p`
+    if [ -x $dir ]; then
+      echo "	${TEST_GREEN}$i${TEST_NEUTRAL}#-->#${TEST_BLUE}`eval $p`${TEST_NEUTRAL}"
+    else
+      echo "	${TEST_GREEN}$i${TEST_NEUTRAL}#-->#${TEST_RED}`eval $p`${TEST_NEUTRAL}"
+    fi
   done | column -s \# -t
 }
 
