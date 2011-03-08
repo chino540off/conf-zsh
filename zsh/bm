@@ -1,0 +1,57 @@
+##############################
+# Bookmarks
+##############################
+if [ -z "$bmlist" ]; then
+  bmlist=""
+fi
+
+function bm ()
+{
+  export $1="`pwd`"
+  bmlist=`for i in $bmlist $1; do echo $i; done | sort -u`
+  export bmlist
+}
+
+function brm ()
+{
+  for j in $@; do
+    export $j=
+    bmlist=`for i in $bmlist; do if [ $i != $j ]; then echo $i; fi; done | sort -u`
+  done
+  export bmlist
+}
+
+function bl ()
+{
+  for i in $bmlist; do
+    local p="echo \$${i}"
+    local dir=`eval $p`
+    if [ -x $dir ]; then
+      echo "	${TEST_GREEN}$i${TEST_NEUTRAL}#-->#${TEST_BLUE}`eval $p`${TEST_NEUTRAL}"
+    else
+      echo "	${TEST_GREEN}$i${TEST_NEUTRAL}#-->#${TEST_RED}`eval $p`${TEST_NEUTRAL}"
+    fi
+  done | column -s \# -t
+}
+
+function bclear ()
+{
+  export bmlist=
+}
+
+function b ()
+{
+  p="echo \$$1"
+  if [ -z "`eval $p`" ]; then
+    echo unknown bookmark: $1
+  else
+    cd "`eval $p`"
+  fi
+}
+
+function _bookmark_completion ()
+{
+  reply=(`echo $bmlist | sed -re 's/ $//'`)
+}
+
+# vim:filetype=zsh

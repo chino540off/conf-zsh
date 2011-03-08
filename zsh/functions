@@ -5,15 +5,16 @@ TEST_YELLOW="\033[33;01m"
 TEST_BLUE="\033[34;01m"
 TEST_NEUTRAL="\033[0m"
 
-#
+##############################
+# My Print
 # $1: level
 # levels:
 #   - 1: blue
 #   - 2: green
 #   - 3: yellow
 #   - 4: red
-#
-my_print()
+##############################
+function my_print()
 {
   level=$1
   if [ -z "$1" ]; then
@@ -32,10 +33,10 @@ my_print()
   fi
 }
 
-#
-# auto source
-#
-auto_source()
+##############################
+# Auto Source
+##############################
+function auto_source()
 {
   cd ~/conf
   br=$(git symbolic-ref HEAD || git-name-rev --name-only HEAD 2>/dev/null)
@@ -45,10 +46,11 @@ auto_source()
   source ~/.zshrc
 }
 
-#
+##############################
+# Git Fetch Merge
 # $1: remote
-#
-git_fetch_merge()
+##############################
+function git_fetch_merge()
 {
   remote="$1"
   current_branch=$BRANCH
@@ -85,7 +87,10 @@ git_fetch_merge()
   my_print 3 "$checkout_output"
 }
 
-v()
+##############################
+# ViM
+##############################
+function v()
 {
   if [ $# -eq 1 -o $# -eq 0 ]; then
     vim $@
@@ -94,69 +99,4 @@ v()
   fi
 }
 
-rppush ()
-{
-  repo forall $@ -c 'git push $REPO_REMOTE $REPO_RREV:$REPO_RREV'
-}
-
-rpfetch ()
-{
-  nb=$#
-  projects=""
-  remote=""
-  while [ $nb -gt 0 ]; do
-    if [ "$1" = "--remote" -o "$1" = "-r" ]; then
-      shift
-	remote=$1
-	nb=$(( $nb - 1 ))
-    else
-      projects="$projects $1"
-    fi
-    shift
-    nb=$(( $nb - 1 ))
-  done
-
-  if [ ! -z "$remote" ]; then
-    repo forall $projects -c "echo Fetching \$REPO_PROJECT ...; git fetch $remote"
-  else
-    repo forall $projects -c 'git fetch $REPO_REMOTE'
-  fi
-}
-
-rpmerge ()
-{
-  nb=$#
-  projects=""
-  remote=""
-  while [ $nb -gt 0 ]; do
-    if [ "$1" = "--remote" -o "$1" = "-r" ]; then
-      shift
-	remote=$1
-	nb=$(( $nb - 1 ))
-    else
-      projects="$projects $1"
-    fi
-    shift
-    nb=$(( $nb - 1 ))
-  done
-
-  echo $projects
-
-  if [ ! -z "$remote" ]; then
-    repo forall $projects -c "echo Merging \$REPO_PROJECT ...; git merge $remote/\$REPO_RREV"
-  else
-    repo forall $projects -c 'git merge $REPO_REMOTE/$REPO_RREV'
-  fi
-}
-
-rpinitbr ()
-{
-  repo forall $@ -c 'git checkout -b $REPO_RREV $REPO_REMOTE/$REPO_RREV --track'
-}
-
-rpst ()
-{
-  repo status $@
-}
-
-# vim:filetype=sh
+# vim:filetype=zsh

@@ -1,0 +1,69 @@
+##############################
+# Repo
+##############################
+function rppush ()
+{
+  repo forall $@ -c 'source ~/.zsh/functions; my_print 1 Pushing $REPO_PROJECT ...; git push $REPO_REMOTE $REPO_RREV:$REPO_RREV'
+}
+
+function rpfetch ()
+{
+  nb=$#
+  projects=""
+  remote=""
+  while [ $nb -gt 0 ]; do
+    if [ "$1" = "--remote" -o "$1" = "-r" ]; then
+      shift
+	remote=$1
+	nb=$(( $nb - 1 ))
+    else
+      projects="$projects $1"
+    fi
+    shift
+    nb=$(( $nb - 1 ))
+  done
+
+  if [ ! -z "$remote" ]; then
+    repo forall $projects -c "source ~/.zsh/functions; my_print 1 Fetching \$REPO_PROJECT ...; git fetch $remote"
+  else
+    repo forall $projects -c 'source ~/.zsh/functions; my_print 1 Fetching $REPO_PROJECT ...; git fetch $REPO_REMOTE'
+  fi
+}
+
+function rpmerge ()
+{
+  nb=$#
+  projects=""
+  remote=""
+  while [ $nb -gt 0 ]; do
+    if [ "$1" = "--remote" -o "$1" = "-r" ]; then
+      shift
+	remote=$1
+	nb=$(( $nb - 1 ))
+    else
+      projects="$projects $1"
+    fi
+    shift
+    nb=$(( $nb - 1 ))
+  done
+
+  echo $projects
+
+  if [ ! -z "$remote" ]; then
+    repo forall $projects -c "source ~/.zsh/functions; my_print 1 Merging \$REPO_PROJECT ...; git merge $remote/\$REPO_RREV"
+  else
+    repo forall $projects -c 'source ~/.zsh/functions; my_print 1 Merging $REPO_PROJECT ...; git merge $REPO_REMOTE/$REPO_RREV'
+  fi
+}
+
+function rpinitbr ()
+{
+  repo forall $@ -c 'git checkout -b $REPO_RREV $REPO_REMOTE/$REPO_RREV --track'
+}
+
+function rpst ()
+{
+  repo status $@
+}
+
+# vim:filetype=zsh
