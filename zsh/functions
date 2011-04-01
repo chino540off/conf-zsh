@@ -99,4 +99,17 @@ function v()
   fi
 }
 
+##############################
+# CScope
+# $@: directoies.
+##############################
+function cs_update()
+{
+  if [ $# -eq 0 ]; then
+    my_print 4 "No input directory"
+    return 1
+  fi
+  cscope -b `find $@ -iname "*.[ch]"`
+}
+
 # vim:filetype=zsh
