@@ -22,9 +22,4 @@ zstyle ':completion:*:processes' command 'ps -au$USER'
 setopt correctall
 setopt emacs
 
-# bsave bload
-compctl -K _bookmark_completion b
-compctl -K _bookmark_completion brm
-
-
 # vim:filetype=zsh

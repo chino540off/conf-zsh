@@ -1,19 +1,41 @@
 ##############################
 # Bookmarks
 ##############################
+TEST_RED="\033[31;01m"
+TEST_GREEN="\033[32;01m"
+TEST_YELLOW="\033[33;01m"
+TEST_BLUE="\033[34;01m"
+TEST_NEUTRAL="\033[0m"
+
 if [ -z "$bmlist" ]; then
   bmlist=""
 fi
 
+BOOKMARK_SAVE_DIR=~/conf/zsh/bookmarks
+BOOKMARK_ERROR_COLOR=$TEST_RED
+BOOKMARK_BM_COLUMN_COLOR=$TEST_GREEN
+BOOKMARK_SYM_COLUMN_COLOR=$TEST_BLUE
+BOOKMARK_PWD_COLOR=$TEST_GREEN
+BOOKMARK_DIR_COLUMN_COLOR=$TEST_WHITE
+BOOKMARK_SEARCH_COLOR="01;31"
+
+# add bookmark
 function bm ()
 {
+  local i=
+  if [ -z "$1" ]; then
+    1=`basename $PWD`
+  fi
   export $1="`pwd`"
   bmlist=`for i in $bmlist $1; do echo $i; done | sort -u`
   export bmlist
 }
 
+# remove bookmark
 function brm ()
 {
+  local j=
+  local i=
   for j in $@; do
     export $j=
     bmlist=`for i in $bmlist; do if [ $i != $j ]; then echo $i; fi; done | sort -u`
@@ -21,37 +43,132 @@ function brm ()
   export bmlist
 }
 
+# list bookmarks
 function bl ()
 {
+  local i=
   for i in $bmlist; do
     local p="echo \$${i}"
-    local dir=`eval $p`
-    if [ -x $dir ]; then
-      echo "	${TEST_GREEN}$i${TEST_NEUTRAL}#-->#${TEST_BLUE}`eval $p`${TEST_NEUTRAL}"
+    local dir="`eval $p`"
+    if [ -d "$dir" -a -x "$dir" ]; then
+      if [ "`readlink -f $dir`" = "`readlink -f $PWD`" ] ; then
+	echo "	${BOOKMARK_BM_COLUMN_COLOR}$i#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_PWD_COLOR}$dir${TEST_NEUTRAL}"
+      else
+	echo "	${BOOKMARK_BM_COLUMN_COLOR}$i#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_DIR_COLUMN_COLOR}$dir${TEST_NEUTRAL}"
+      fi
     else
-      echo "	${TEST_GREEN}$i${TEST_NEUTRAL}#-->#${TEST_RED}`eval $p`${TEST_NEUTRAL}"
+      echo "	${BOOKMARK_BM_COLUMN_COLOR}$i#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_ERROR_COLOR}$dir${TEST_NEUTRAL}"
     fi
   done | column -s \# -t
 }
 
+# find (grep) bookmarks
+function bf ()
+{
+  bl | GREP_COLORS="ms=$BOOKMARK_SEARCH_COLOR:mc=01;31:sl=:cx=:fn=35:ln=32:bn=32:se=36" egrep "$@"
+}
+
+# remove all bookmarks
 function bclear ()
 {
   export bmlist=
 }
 
+# remove broken bookmarks
+function bclean ()
+{
+  local j=
+  local i=
+  for j in $bmlist; do
+    local p="echo \$${j}"
+    local dir="`eval $p`"
+    if [ ! -d "$dir" -o ! -x "$dir" ]; then
+      unset $j
+      bmlist=`for i in $bmlist; do if [ "$i" != "$j" ]; then echo "$i"; fi; done | sort -u`
+    fi
+  done
+  export bmlist
+}
+
+# jump to bookmark
 function b ()
 {
   p="echo \$$1"
-  if [ -z "`eval $p`" ]; then
-    echo unknown bookmark: $1
-  else
+  if echo $bmlist | egrep -q "\b$1\b"; then
     cd "`eval $p`"
+  else
+    echo $BOOKMARK_ERROR_COLOR unknown bookmark: $1 $TEST_NEUTRAL
   fi
+}
+
+# save bookmark session
+function bsave ()
+{
+  if [ -z "$1" ]; then
+    echo $BOOKMARK_ERROR_COLOR Please give a session name. $TEST_NEUTRAL
+    return
+  fi
+
+  if [ -e "$BOOKMARK_SAVE_DIR/$1" ]; then
+    local save="$BOOKMARK_SAVE_DIR/$1/.save/`date '+%Y.%m.%d-%H:%M:%S'`" 
+    mkdir -p "$save"
+    mv "$BOOKMARK_SAVE_DIR/$1"/* "$save"/
+    echo "Saved previous version of $1 in $save"
+  else
+    mkdir -p "$BOOKMARK_SAVE_DIR/$1"
+  fi
+
+  echo "$bmlist" > "$BOOKMARK_SAVE_DIR/$1/bmlist"
+
+  local i=
+  for i in $bmlist; do
+    local p="echo \$${i}"
+    local dir="`eval $p`"
+    echo "$dir" > "$BOOKMARK_SAVE_DIR/$1/$i"
+  done
+}
+
+# load bookmark session
+function bload ()
+{
+  if [ -z "$1" ]; then
+    echo $BOOKMARK_ERROR_COLOR Please give a session name. $TEST_NEUTRAL
+    return
+  fi
+
+  local i=
+  for i in "$BOOKMARK_SAVE_DIR/$1"/*; do
+    local n="`basename $i`"
+    local d="`cat $i`"
+    export $n="$d"
+  done
+}
+
+# remove bookmark session
+brm_session ()
+{
+  if [ -z "$1" ]; then
+    echo $BOOKMARK_ERROR_COLOR Please give a session name. $TEST_NEUTRAL
+    return
+  fi
+
+  rm -rf "$BOOKMARK_SAVE_DIR/$1"
 }
 
 function _bookmark_completion ()
 {
   reply=(`echo $bmlist | sed -re 's/ $//'`)
 }
+
+function _bookmark_session_completion ()
+{
+  reply=(`ls $BOOKMARK_SAVE_DIR`)
+}
+
+compctl -K _bookmark_completion b
+compctl -K _bookmark_completion brm
+compctl -K _bookmark_session_completion bsave
+compctl -K _bookmark_session_completion bload
+compctl -K _bookmark_session_completion brm_session
 
 # vim:filetype=zsh
