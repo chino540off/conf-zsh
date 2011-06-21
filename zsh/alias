@@ -11,5 +11,7 @@ alias ssh='ssh -o GSSAPIAuthentication=no'
 
 alias grep='grep -in --color=always'
 
+alias cp='rsync -a --progress'
+
 
 # vim:filetype=zsh
