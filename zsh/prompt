@@ -93,7 +93,7 @@ function lprompt
   local my_prompt="${PR_BRIGHT_WHITE}>${PR_RESET}"
    
   PROMPT="$up_left_corner${PR_RESET}${bracket_open}${cwd}${bracket_close}$little_line
-$under_left_corner(${user_host}${PR_RESET})$little_line "
+$under_left_corner${bracket_open}${user_host}${PR_RESET}${bracket_close}$little_line "
 } 
 
 function rprompt
@@ -110,7 +110,7 @@ function rprompt
   RPROMPT="$little_line${PR_RESET}${bracket_open}${timestamp}${bracket_close}${PR_RESET}"
 }
  
-lprompt '()' $BR_BRIGHT_BLACK $PR_WHITE
-rprompt '()' $BR_BRIGHT_BLACK $PR_WHITE
+lprompt '()' $BR_BRIGHT_BLACK $PR_BRIGHT_WHITE
+rprompt '()' $BR_BRIGHT_BLACK $PR_BRIGHT_WHITE
 
 # vim:filetype=zsh
