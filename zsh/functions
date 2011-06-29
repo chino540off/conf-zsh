@@ -108,6 +108,11 @@ function vs()
   fi
 }
 
+function vdiff()
+{
+    gvimdiff $@
+}
+
 ##############################
 # CScope
 # $@: directoies.
