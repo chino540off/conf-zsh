@@ -72,6 +72,7 @@ function bf ()
 function bclear ()
 {
   export bmlist=
+  export BOOKMARK_ENV=
 }
 
 # remove broken bookmarks
@@ -135,6 +136,8 @@ function bload ()
     echo $BOOKMARK_ERROR_COLOR Please give a session name. $TEST_NEUTRAL
     return
   fi
+
+  export BOOKMARK_ENV="$1"
 
   local i=
   for i in "$BOOKMARK_SAVE_DIR/$1"/*; do
