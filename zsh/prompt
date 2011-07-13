@@ -70,6 +70,13 @@ function precmd()
       #preexec () { print -Pn "\e]0;%n@%m:%~\a $1" }
     ;;
   esac
+
+  # Bookmarks env
+  if [ -n "$BOOKMARK_ENV" ]; then
+    export bm_env="${PR_BRIGHT_CYAN}($BOOKMARK_ENV)${PR_RESET}"
+  else
+    export bm_env=""
+  fi
 }
 
 function lprompt
@@ -92,7 +99,7 @@ function lprompt
   local cwd="${PR_BRIGHT_BLUE}${vcs_cwd}${PR_RESET}"
   local my_prompt="${PR_BRIGHT_WHITE}>${PR_RESET}"
    
-  PROMPT="$up_left_corner${PR_RESET}${bracket_open}${cwd}${bracket_close}$little_line
+  PROMPT="$up_left_corner${PR_RESET}${bracket_open}"'${bm_env}'"${cwd}${bracket_close}$little_line
 $under_left_corner${bracket_open}${user_host}${PR_RESET}${bracket_close}$little_line "
 } 
 
