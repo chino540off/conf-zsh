@@ -52,12 +52,12 @@ function bl ()
     local dir="`eval $p`"
     if [ -d "$dir" -a -x "$dir" ]; then
       if [ "`readlink -f $dir`" = "`readlink -f $PWD`" ] ; then
-	echo "	${BOOKMARK_BM_COLUMN_COLOR}$i#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_PWD_COLOR}$dir${TEST_NEUTRAL}"
+	echo "	${BOOKMARK_BM_COLUMN_COLOR}$i#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_PWD_COLOR}${dir/$HOME/~}${TEST_NEUTRAL}"
       else
-	echo "	${BOOKMARK_BM_COLUMN_COLOR}$i#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_DIR_COLUMN_COLOR}$dir${TEST_NEUTRAL}"
+	echo "	${BOOKMARK_BM_COLUMN_COLOR}$i#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_DIR_COLUMN_COLOR}${dir/$HOME/~}${TEST_NEUTRAL}"
       fi
     else
-      echo "	${BOOKMARK_BM_COLUMN_COLOR}$i#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_ERROR_COLOR}$dir${TEST_NEUTRAL}"
+      echo "	${BOOKMARK_BM_COLUMN_COLOR}$i#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_ERROR_COLOR}${dir/$HOME/~}${TEST_NEUTRAL}"
     fi
   done | column -s \# -t
 }
