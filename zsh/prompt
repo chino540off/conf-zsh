@@ -73,7 +73,7 @@ function precmd()
 
   # Bookmarks env
   if [ -n "$BOOKMARK_ENV" ]; then
-    export bm_env="${PR_BRIGHT_CYAN}($BOOKMARK_ENV)${PR_RESET}"
+    export bm_env="${PR_BRIGHT_CYAN}:$BOOKMARK_ENV:${PR_RESET}"
   else
     export bm_env=""
   fi
