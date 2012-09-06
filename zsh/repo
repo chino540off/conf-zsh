@@ -1,6 +1,17 @@
 ##############################
 # Repo
 ##############################
+TEST_RED="\033[31;01m"
+TEST_GREEN="\033[32;01m"
+TEST_YELLOW="\033[33;01m"
+TEST_BLUE="\033[34;01m"
+TEST_NEUTRAL="\033[0m"
+
+function rpprint()
+{
+  echo -e "${TEST_BLUE}$@${TEST_NEUTRAL}"
+}
+
 function rppush ()
 {
   nb=$#
@@ -19,9 +30,9 @@ function rppush ()
   done
 
   if [ ! -z "$remote" ]; then
-    repo forall $@ -c 'echo "source ~/.zsh/functions; my_print 1 Pushing $REPO_PROJECT ..." | zsh ; git push '"$remote"' $REPO_RREV:$REPO_RREV'
+    repo forall $@ -c 'echo "source ~/.zsh/repo; rpprint Pushing $REPO_PROJECT ..." | zsh ; git push '"$remote"' $REPO_RREV:$REPO_RREV'
   else
-    repo forall $@ -c 'echo "source ~/.zsh/functions; my_print 1 Pushing $REPO_PROJECT ..." | zsh ; git push $REPO_REMOTE $REPO_RREV:$REPO_RREV'
+    repo forall $@ -c 'echo "source ~/.zsh/repo; rpprint Pushing $REPO_PROJECT ..." | zsh ; git push $REPO_REMOTE $REPO_RREV:$REPO_RREV'
   fi
 }
 
@@ -43,9 +54,9 @@ function rpfetch ()
   done
 
   if [ ! -z "$remote" ]; then
-    repo forall $projects -c 'echo "source ~/.zsh/functions; my_print 1 Fetching \$REPO_PROJECT ..." | zsh'"; git fetch $remote"
+    repo forall $projects -c 'echo "source ~/.zsh/repo; rpprint Fetching \$REPO_PROJECT ..." | zsh'"; git fetch $remote"
   else
-    repo forall $projects -c 'echo "source ~/.zsh/functions; my_print 1 Fetching $REPO_PROJECT ..."  | zsh; git fetch $REPO_REMOTE'
+    repo forall $projects -c 'echo "source ~/.zsh/repo; rpprint Fetching $REPO_PROJECT ..."  | zsh; git fetch $REPO_REMOTE'
   fi
 }
 
@@ -69,20 +80,42 @@ function rpmerge ()
   echo $projects
 
   if [ ! -z "$remote" ]; then
-    repo forall $projects -c 'echo "source ~/.zsh/functions; my_print 1 Merging \$REPO_PROJECT ..." | zsh'"; git merge $remote/\$REPO_RREV"
+    repo forall $projects -c 'echo "source ~/.zsh/repo; rpprint Merging \$REPO_PROJECT ..." | zsh'"; git merge $remote/\$REPO_RREV"
   else
-    repo forall $projects -c 'echo "source ~/.zsh/functions; my_print 1 Merging $REPO_PROJECT ..."  | zsh; git merge $REPO_REMOTE/$REPO_RREV'
+    repo forall $projects -c 'echo "source ~/.zsh/repo; rpprint Merging $REPO_PROJECT ..."  | zsh; git merge $REPO_REMOTE/$REPO_RREV'
   fi
 }
 
 function rpinitbr ()
 {
-  repo forall $@ -c 'git checkout -b $REPO_RREV $REPO_REMOTE/$REPO_RREV --track'
+  repo forall $@ -c 'echo "source ~/.zsh/repo; rpprint Init \$REPO_RREV in \$REPO_PROJECT ..." | zsh; git checkout -b $REPO_RREV $REPO_REMOTE/$REPO_RREV --track'
 }
 
-function rpst ()
+function rpstatus ()
 {
   repo status $@
+}
+
+#
+# rpremote add toto path
+#          del toto
+#
+function rpremote ()
+{
+	cmd=$1
+	shift
+
+	remote=$1
+	shift
+
+	if [ "$cmd" = "add" ]; then
+		remote_path=$1
+		shift
+		repo forall $@ -c 'echo "source ~/.zsh/repo; rpprint Add remote '$remote' in \$REPO_PROJECT ..." | zsh; git remote '"$cmd $remote $remote_path/"'$REPO_PROJECT.git'
+	else
+		repo forall $@ -c 'echo "source ~/.zsh/repo; rpprint Del remote '$remote' in \$REPO_PROJECT ..." | zsh; git remote '"$cmd $remote"
+	fi
+
 }
 
 # vim:filetype=zsh
