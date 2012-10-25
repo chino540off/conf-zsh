@@ -90,7 +90,7 @@ function git_fetch_merge()
 ##############################
 # ViM
 ##############################
-function v()
+function vs()
 {
   if [ $# -eq 1 -o $# -eq 0 ]; then
     gvim --servername 1 --remote $@
@@ -99,7 +99,7 @@ function v()
   fi
 }
 
-function vs()
+function v()
 {
   if [ $# -eq 1 -o $# -eq 0 ]; then
     gvim --servername $VIM_SERVER --remote $@
