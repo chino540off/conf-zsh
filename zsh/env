@@ -23,25 +23,22 @@ bindkey '^D'	delete-char
 
 # Options
 setopt autocd
-  # no beep
+# no beep
 unsetopt beep
 unsetopt hist_beep
 unsetopt list_beep
-  # ask confirmation for rm *
+# ask confirmation for rm *
 unsetopt rm_star_silent
 
-  # enable IFS
+# enable IFS
 setopt sh_wordsplit
-
-export KANETON_PYTHON="/usr/bin/python"
-export KANETON_ARCHITECTURE="ia32/educational"
-export KANETON_PLATFORM="ibm-pc"
-export KANETON_USER="olivier.detour"
-export KANETON_HOST="linux/ia32"
 
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_DATA_HOME="$HOME/.local/share"
-export PAGER=most
+
+if [ $SYSTEM != "Darwin" ]; then
+	export PAGER=most
+fi
 
 # vim:filetype=zsh

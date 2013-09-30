@@ -1,8 +1,15 @@
 # ls/df/du human readable
-alias ls='ls --color=auto -h'
+
+if [ $SYSTEM = "Darwin" ]; then
+	alias ls='ls -G -h'
+else
+	alias ls='ls --color=auto -h'
+fi
+
 alias ll='ls -l'
 alias lla='ls -la'
 alias la='ls -a'
+
 alias diff='colordiff'
 #alias vim="vim -O2"
 alias df="df -h"
