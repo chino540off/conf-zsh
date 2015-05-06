@@ -96,6 +96,11 @@ function rpstatus ()
   repo status $@
 }
 
+function rpsync ()
+{
+  repo sync -j 4
+}
+
 #
 # rpremote add toto path
 #          del toto
