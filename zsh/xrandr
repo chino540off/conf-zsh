@@ -1,0 +1,11 @@
+function multiScreen()
+{
+	xrandr --output eDP1 --auto --primary --output HDMI1 --auto --above eDP1
+}
+
+function singleScreen()
+{
+	xrandr --output eDP1 --auto --primary --output HDMI1 --off
+}
+
+# vim:filetype=zsh
