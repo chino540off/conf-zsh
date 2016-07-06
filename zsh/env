@@ -41,4 +41,6 @@ if [ $SYSTEM != "Darwin" ]; then
 	export PAGER=most
 fi
 
+export VIRTUAL_ENV_DISABLE_PROMPT=yes
+
 # vim:filetype=zsh

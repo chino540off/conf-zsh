@@ -77,6 +77,13 @@ function precmd()
   else
     export bm_env=""
   fi
+
+  # Python Virtual env
+  if [ -n "$VIRTUAL_ENV" ]; then
+    export virtual_env="${PR_BRIGHT_YELLOW}:`basename $VIRTUAL_ENV`:${PR_RESET}"
+  else
+    export virtual_env=""
+  fi
 }
 
 function lprompt
@@ -99,7 +106,7 @@ function lprompt
   local cwd="${PR_BRIGHT_BLUE}${vcs_cwd}${PR_RESET}"
   local my_prompt="${PR_BRIGHT_WHITE}>${PR_RESET}"
    
-  PROMPT="$up_left_corner${PR_RESET}${bracket_open}"'${bm_env}'"${cwd}${bracket_close}$little_line
+  PROMPT="$up_left_corner${PR_RESET}${bracket_open}"'${bm_env}'""'${virtual_env}'"${cwd}${bracket_close}$little_line
 $under_left_corner${bracket_open}${user_host}${PR_RESET}${bracket_close}$little_line "
 } 
 
