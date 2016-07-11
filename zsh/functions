@@ -38,7 +38,7 @@ function my_print()
 ##############################
 function auto_source()
 {
-  cd ~/conf
+  cd ~/.zsh/
   br=$(git symbolic-ref HEAD || git-name-rev --name-only HEAD 2>/dev/null)
   br=${br#refs/heads/}
   cd - > /dev/null 2>&1
