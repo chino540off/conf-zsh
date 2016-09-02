@@ -1,0 +1,42 @@
+function _spotify_command()
+{
+  dbus-send \
+    --print-reply \
+    --dest=org.mpris.MediaPlayer2.spotify \
+    /org/mpris/MediaPlayer2 \
+    $@
+}
+function _spotify_ctrl_completion ()
+{
+  reply=(play pause next prev)
+}
+
+function spotify_ctrl()
+{
+  case $1 in
+    play)
+      _spotify_command org.mpris.MediaPlayer2.Player.Play
+      ;;
+    pause)
+      _spotify_command org.mpris.MediaPlayer2.Player.Pause
+      ;;
+    next)
+      _spotify_command org.mpris.MediaPlayer2.Player.Next
+      ;;
+    prev)
+      _spotify_command org.mpris.MediaPlayer2.Player.Previous
+      ;;
+    *)
+      echo $1: command not found
+      ;;
+  esac
+}
+
+alias play='spotify_ctrl play'
+alias pause='spotify_ctrl pause'
+alias next='spotify_ctrl next'
+alias prev='spotify_ctrl prev'
+
+compctl -K _spotify_ctrl_completion spotify_ctrl
+
+# vim:filetype=zsh
