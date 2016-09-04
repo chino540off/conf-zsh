@@ -1,0 +1,48 @@
+function __notify()
+{
+  title="$1"
+  shift
+  text="$1"
+  shift
+  opts="title = '$title', text = '$text', width = 300, border_width=2, border_color='#808080'"
+  for opt in $@; do
+    opts="$opts, $opt"
+  done
+
+  echo "require('naughty').notify({ $opts })" | awesome-client
+}
+
+function _notify_alert()
+{
+  __notify "$1" "$2" \
+    "timeout=0" \
+    "bg='#ff0000'" \
+    "fg='#ffffff'"
+}
+
+function _notify()
+{
+  __notify "$1" "$2" \
+    "timeout=5"
+}
+
+function _notify_good()
+{
+  __notify "$1" "$2" \
+    "timeout=10" \
+    "bg='#9acd32'" \
+    "fg='#ffffff'"
+}
+
+function notify_cmd()
+{
+  $@
+  cmd="$@"
+  if [ $? -eq 0 ]; then
+    _notify_good 'Command succeed' "$cmd succeed"
+  else
+    _notify_alert "Command failed (error code: $?)" "$@ failed"
+  fi
+}
+
+# vim:filetype=zsh
