@@ -1,65 +1,13 @@
-SP_VERSION="0.1"
-SP_DEST="org.mpris.MediaPlayer2.spotify"
-SP_PATH="/org/mpris/MediaPlayer2"
-SP_MEMB="org.mpris.MediaPlayer2.Player"
-
-function _spotify_command()
-{
-  dbus-send --print-reply --dest=$SP_DEST $SP_PATH $@
-}
-
-function _spotify_metadata()
-{
-  _spotify_command org.freedesktop.DBus.Properties.Get string:"$SP_MEMB" string:'Metadata' \
-    | \grep -Ev "^method"                           `# Ignore the first line.`   \
-    | \grep -Eo '("(.*)")|(\b[0-9][a-zA-Z0-9.]*\b)' `# Filter interesting fiels.`\
-    | sed -E '2~2 a|'                               `# Mark odd fields.`         \
-    | tr -d '\n'                                    `# Remove all newlines.`     \
-    | sed -E 's/\|/\n/g'                            `# Restore newlines.`        \
-    | sed -E 's/(xesam:)|(mpris:)//'                `# Remove ns prefixes.`      \
-    | sed -E 's/^"//'                               `# Strip leading...`         \
-    | sed -E 's/"$//'                               `# ...and trailing quotes.`  \
-    | sed -E 's/"+/|/'                              `# Regard "" as seperator.`  \
-    | sed -E 's/ +/ /g'                             `# Merge consecutive spaces.`
-}
-
-function _spotify_ctrl_completion ()
+function _sp_completion ()
 {
   reply=(play pause next prev current)
 }
 
-function spotify_ctrl()
-{
-  case $1 in
-    play)
-      _spotify_command $SP_MEMB.Play
-      ;;
-    pause)
-      _spotify_command $SP_MEMB.Pause
-      ;;
-    next)
-      _spotify_command $SP_MEMB.Next
-      ;;
-    prev)
-      _spotify_command $SP_MEMB.Previous
-      ;;
-    current)
-      _spotify_metadata \
-        | \grep --color=never -E "(title)|(artist)" \
-        | sed 's/^\(.*|\)//' \
-        | paste -sd "#" | sed 's/#/ - /'
-      ;;
-    *)
-      echo $1: command not found
-      ;;
-  esac
-}
+alias play='sp play'
+alias pause='sp pause'
+alias next='sp next'
+alias prev='sp prev'
 
-alias play='spotify_ctrl play'
-alias pause='spotify_ctrl pause'
-alias next='spotify_ctrl next'
-alias prev='spotify_ctrl prev'
-
-compctl -K _spotify_ctrl_completion spotify_ctrl
+compctl -K _sp_completion sp
 
 # vim:filetype=zsh
