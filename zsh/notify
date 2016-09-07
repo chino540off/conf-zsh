@@ -36,12 +36,12 @@ function _notify_good()
 
 function notify_cmd()
 {
-  $@
   cmd="$@"
+  $@
   if [ $? -eq 0 ]; then
     _notify_good 'Command succeed' "$cmd succeed"
   else
-    _notify_alert "Command failed (error code: $?)" "$@ failed"
+    _notify_alert "Command failed (error code: $?)" "$cmd failed"
   fi
 }
 
