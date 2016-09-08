@@ -12,26 +12,34 @@ function __notify()
   echo "require('naughty').notify({ $opts })" | awesome-client
 }
 
-function _notify_alert()
-{
-  __notify "$1" "$2" \
-    "timeout=0" \
-    "bg='#ff0000'" \
-    "fg='#ffffff'"
-}
-
 function _notify()
 {
   __notify "$1" "$2" \
     "timeout=5"
 }
 
+function _notify_alert()
+{
+  if [ `uname -s` = 'Darwin' ]; then
+    /usr/bin/osascript -e "display notification \"$2\" with title \"$1\" sound name \"Sosumi\""
+  else
+    __notify "$1" "$2" \
+      "timeout=0" \
+      "bg='#ff0000'" \
+      "fg='#ffffff'"
+  fi
+}
+
 function _notify_good()
 {
-  __notify "$1" "$2" \
-    "timeout=10" \
-    "bg='#9acd32'" \
-    "fg='#ffffff'"
+  if [ `uname -s` = 'Darwin' ]; then
+    /usr/bin/osascript -e "display notification \"$2\" with title \"$1\" sound name \"Glass\""
+  else
+    __notify "$1" "$2" \
+      "timeout=10" \
+      "bg='#9acd32'" \
+      "fg='#ffffff'"
+  fi
 }
 
 function notify_cmd()
