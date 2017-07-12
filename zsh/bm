@@ -148,7 +148,7 @@ function bload ()
 }
 
 # remove bookmark session
-brm_session ()
+function brm_session ()
 {
   if [ -z "$1" ]; then
     echo $BOOKMARK_ERROR_COLOR Please give a session name. $TEST_NEUTRAL
