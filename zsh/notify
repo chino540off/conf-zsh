@@ -4,12 +4,13 @@ function __notify()
   shift
   text="$1"
   shift
-  opts="title = '$title', text = '$text', width = 300, border_width=2, border_color='#808080'"
-  for opt in $@; do
-    opts="$opts, $opt"
-  done
+  pb -t "$title" -m "$text"
+  #opts="title = '$title', text = '$text', width = 300, border_width=2, border_color='#808080'"
+  #for opt in $@; do
+  #  opts="$opts, $opt"
+  #done
 
-  echo "require('naughty').notify({ $opts })" | awesome-client
+  #echo "require('naughty').notify({ $opts })" | awesome-client
 }
 
 function _notify()
