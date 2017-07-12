@@ -126,4 +126,27 @@ function cs_update()
   cscope -b `find $@ -iname "*.[ch]"`
 }
 
+##############################
+# Make wrapper
+#
+##############################
+function m()
+{
+  make $@
+}
+
+function mtargets()
+{
+  make -qp | \
+    awk -F":" "/^[a-zA-Z0-9][^$#\/\t=]*:([^=]|$)/ {split(\$1,A,/ /);for(i in A)print A[i]}" | \
+    sort -u
+}
+
+function _make_completion ()
+{
+  reply=(`mtargets`)
+}
+
+compctl -K _make_completion m
+
 # vim:filetype=zsh
