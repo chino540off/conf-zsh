@@ -1,0 +1,30 @@
+parrot="A0:14:3D:D3:93:E2"
+jambox="00:21:3C:9C:F0:53"
+
+function blconnect()
+{
+  mac=$(eval "echo \$$1")
+
+  bluetoothctl << EOF
+    power on
+
+    connect $mac
+EOF
+}
+
+function bldisconnect()
+{
+  mac=$(eval "echo \$$1")
+
+  bluetoothctl << EOF
+    disconnect $mac
+EOF
+}
+
+function blreconnect()
+{
+  bldisconnect $1
+  blconnect $1
+}
+
+# vim:filetype=zsh
