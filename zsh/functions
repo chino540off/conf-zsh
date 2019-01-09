@@ -88,32 +88,6 @@ function git_fetch_merge()
 }
 
 ##############################
-# ViM
-##############################
-function vs()
-{
-  if [ $# -eq 1 -o $# -eq 0 ]; then
-    gvim --servername 1 --remote $@
-  else
-    gvim -O2 --servername 1 --remote $@
-  fi
-}
-
-function v()
-{
-  if [ $# -eq 1 -o $# -eq 0 ]; then
-    gvim --servername $VIM_SERVER --remote $@
-  else
-    gvim -O2 --servername $VIM_SERVER --remote $@
-  fi
-}
-
-function vdiff()
-{
-    gvimdiff $@
-}
-
-##############################
 # CScope
 # $@: directoies.
 ##############################
