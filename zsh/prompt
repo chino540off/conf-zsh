@@ -10,7 +10,11 @@ colors
 for COLOR in RED GREEN YELLOW WHITE BLACK CYAN BLUE; do
   eval PR_$COLOR='%{$fg[${(L)COLOR}]%}'        
   eval PR_BRIGHT_$COLOR='%{$fg_bold[${(L)COLOR}]%}'
-done                                                
+done
+
+eval PR_PINK='%F{162}'
+eval PR_BRIGHT_PINK='%F{162}'
+
 PR_RESET="%{${reset_color}%}";  
 
 # set formats
@@ -85,6 +89,13 @@ function precmd()
   else
     export virtual_env=""
   fi
+
+  # NixOS derivation
+  if [ -n "$name" ]; then
+    export nix_env="${PR_BRIGHT_PINK}:$name:${PR_RESET}"
+  else
+    export nix_env=""
+  fi
 }
 
 function lprompt
@@ -107,7 +118,7 @@ function lprompt
   local cwd="${vcs_cwd}"
   local my_prompt="${PR_BRIGHT_WHITE}>${PR_RESET}"
    
-  PROMPT="$up_left_corner${PR_RESET}${bracket_open}"'${bm_env}'""'${virtual_env}'"${cwd}${bracket_close}$little_line
+  PROMPT="$up_left_corner${PR_RESET}${bracket_open}"'${nix_env}'""'${bm_env}'""'${virtual_env}'"${cwd}${bracket_close}$little_line
 $under_left_corner${bracket_open}${user_host}${PR_RESET}${bracket_close}$little_line "
 } 
 
