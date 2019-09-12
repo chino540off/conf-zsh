@@ -1,0 +1,100 @@
+# init
+autoload -U colors
+colors
+
+# define some colors
+local _BLACK=0
+local _WHITE=15
+local _GREY=8
+local _LIGHT_GREY=7
+local _RED=1
+local _LIGHT_RED=9
+local _GREEN=2
+local _LIGHT_GREEN=10
+local _YELLOW=3
+local _LIGHT_YELLOW=11
+local _BLUE=4
+local _LIGHT_BLUE=12
+local _MAGENTA=5
+local _LIGHT_MAGENTA=13
+local _CYAN=6
+local _LIGHT_CYAN=14
+local _PINK=200
+local _LIGHT_PINK=213
+local _PURPLE=135
+local _LIGHT_PURPLE=140
+local _ORANGE=208
+local _LIGHT_ORANGE=215
+
+local _COLORS=(
+  BLACK   WHITE
+  GREY    LIGHT_GREY
+  RED     LIGHT_RED
+  GREEN   LIGHT_GREEN
+  YELLOW  LIGHT_YELLOW
+  BLUE    LIGHT_BLUE
+  MAGENTA LIGHT_MAGENTA
+  CYAN    LIGHT_CYAN
+  PINK    LIGHT_PINK
+  PURPLE  LIGHT_PURPLE
+  ORANGE  LIGHT_ORANGE
+)
+
+# generate extended colors
+for COLOR in $_COLORS; do
+  eval COLOR_$COLOR='"\e[0;38;5;${_'${COLOR}'}m"'
+  eval COLOR_BOLD_$COLOR='"\e[1;38;5;${_'${COLOR}'}m"'
+  eval COLOR_UNDERLINED_$COLOR='"\e[4;38;5;${_'${COLOR}'}m"'
+  eval COLOR_BLINK_$COLOR='"\e[5;38;5;${_'${COLOR}'}m"'
+
+  eval PR_$COLOR='"%{%F{${_'${COLOR}'}}%}"'
+  eval PR_BOLD_$COLOR='"%{%B%F{${_'${COLOR}'}}%}"'
+done
+
+# reset formatting
+COLOR_RESET="\e[0m"
+PR_RESET="%{${reset_color}%}"
+
+function check_colors()
+{
+  code=$1
+  if [ "$code" != "" ]; then
+    print -nP -- "$code: %F{$code}Test: %K{$code}Test%k%f " ; (( code % 8 && code < 255 )) || printf '\n'
+  else
+    for COLOR in $_COLORS; do
+      eval echo '${COLOR_'$COLOR'}'regular'${COLOR_RESET}${COLOR_BOLD_'$COLOR'}' bold '${COLOR_RESET}${COLOR_UNDERLINED_'$COLOR'}'underlined'${COLOR_RESET}${COLOR_BLINK_'$COLOR'}' blink'${COLOR_RESET}' $COLOR '${_'$COLOR'}'
+    done
+  fi
+}
+
+function 16colors()
+{
+  for clbg in {40..47} {100..107} 49 ; do
+    #Foreground
+    for clfg in {30..37} {90..97} 39 ; do
+      #Formatting
+      for attr in 0 1 2 4 5 7 ; do
+        #Print the result
+        echo -en "\e[${attr};${clbg};${clfg}m ^[${attr};${clbg};${clfg}m \e[0m"
+      done
+      echo #Newline
+    done
+  done
+}
+
+function 256colors()
+{
+  for fgbg in 38 48 ; do # Foreground / Background
+    for color in {0..255} ; do # Colors
+      # Display the color
+      printf "\e[0;${fgbg};5;%sm  %3s  \e[0m" $color $color
+      # Display 6 colors per lines
+      if [ $((($color + 1) % 6)) -eq 4 ] ; then
+        echo # New line
+      fi
+    done
+    echo # New line
+  done
+}
+
+# vim:filetype=zsh
