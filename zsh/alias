@@ -11,12 +11,19 @@ alias lla='ls -la'
 alias la='ls -a'
 
 alias diff='colordiff'
+
 alias df="df -h"
-alias gitk="gitk --all"
+
 alias ssh='ssh -o GSSAPIAuthentication=no'
 
-alias grep='grep -in --color=always'
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
 
 alias cp='rsync -a --progress'
+
+alias g='git'
+alias gitk="gitk --all"
+
+alias ip='ip -c -h'
 
 # vim:filetype=zsh
