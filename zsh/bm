@@ -1,23 +1,14 @@
-##############################
-# Bookmarks
-##############################
-TEST_RED="\033[31;01m"
-TEST_GREEN="\033[32;01m"
-TEST_YELLOW="\033[33;01m"
-TEST_BLUE="\033[34;01m"
-TEST_NEUTRAL="\033[0m"
-
 if [ -z "$bmlist" ]; then
   bmlist=""
 fi
 
 BOOKMARK_SAVE_DIR=~/conf/zsh/bookmarks
-BOOKMARK_ERROR_COLOR=$TEST_RED
-BOOKMARK_BM_COLUMN_COLOR=$TEST_GREEN
-BOOKMARK_SYM_COLUMN_COLOR=$TEST_BLUE
-BOOKMARK_PWD_COLOR=$TEST_GREEN
-BOOKMARK_DIR_COLUMN_COLOR=$TEST_WHITE
-BOOKMARK_SEARCH_COLOR="01;31"
+BOOKMARK_ERROR_COLOR=$COLOR_BOLD_LIGHT_RED
+BOOKMARK_BM_COLUMN_COLOR=$COLOR_LIGHT_BLUE
+BOOKMARK_BM_CURRENT_COLUMN_COLOR=$COLOR_UNDERLINED_LIGHT_BLUE
+BOOKMARK_SYM_COLUMN_COLOR=$COLOR_WHITE
+BOOKMARK_DIR_COLUMN_COLOR=$COLOR_GREEN
+BOOKMARK_SEARCH_COLOR="01;32"
 
 # add bookmark
 function bm ()
@@ -52,12 +43,12 @@ function bl ()
     local dir="`eval $p`"
     if [ -d "$dir" -a -x "$dir" ]; then
       if [ "`readlink -f $dir`" = "`readlink -f $PWD`" ] ; then
-	echo "	${BOOKMARK_BM_COLUMN_COLOR}$i#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_PWD_COLOR}${dir/$HOME/~}${TEST_NEUTRAL}"
+        echo "	${BOOKMARK_BM_CURRENT_COLUMN_COLOR}$i${COLOR_RESET}#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_DIR_COLUMN_COLOR}${dir/$HOME/~}${COLOR_RESET}"
       else
-	echo "	${BOOKMARK_BM_COLUMN_COLOR}$i#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_DIR_COLUMN_COLOR}${dir/$HOME/~}${TEST_NEUTRAL}"
+        echo "	${BOOKMARK_BM_COLUMN_COLOR}$i${COLOR_RESET}#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_DIR_COLUMN_COLOR}${dir/$HOME/~}${COLOR_RESET}"
       fi
     else
-      echo "	${BOOKMARK_BM_COLUMN_COLOR}$i#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_ERROR_COLOR}${dir/$HOME/~}${TEST_NEUTRAL}"
+      echo "	${BOOKMARK_BM_COLUMN_COLOR}$i${COLOR_RESET}#${BOOKMARK_SYM_COLUMN_COLOR}-->#${BOOKMARK_ERROR_COLOR}${dir/$HOME/~}${COLOR_RESET}"
     fi
   done | column -s \# -t
 }
@@ -71,6 +62,9 @@ function bf ()
 # remove all bookmarks
 function bclear ()
 {
+  for b in $bmlist; do
+    unset $b
+  done
   export bmlist=
   export BOOKMARK_ENV=
 }
@@ -85,7 +79,7 @@ function bclean ()
     local dir="`eval $p`"
     if [ ! -d "$dir" -o ! -x "$dir" ]; then
       unset $j
-      bmlist=`for i in $bmlist; do if [ "$i" != "$j" ]; then echo "$i"; fi; done | sort -u`
+      bmlist=`for i in $bmlist; do if [ $i != $j ]; then echo $i; fi; done | sort -u`
     fi
   done
   export bmlist
@@ -98,7 +92,7 @@ function b ()
   if echo $bmlist | egrep -q "\b$1\b"; then
     cd "`eval $p`"
   else
-    echo $BOOKMARK_ERROR_COLOR unknown bookmark: $1 $TEST_NEUTRAL
+    echo $BOOKMARK_ERROR_COLOR unknown bookmark: $1 $COLOR_RESET
   fi
 }
 
@@ -106,12 +100,12 @@ function b ()
 function bsave ()
 {
   if [ -z "$1" ]; then
-    echo $BOOKMARK_ERROR_COLOR Please give a session name. $TEST_NEUTRAL
+    echo $BOOKMARK_ERROR_COLOR Please give a session name. $COLOR_RESET
     return
   fi
 
   if [ -e "$BOOKMARK_SAVE_DIR/$1" ]; then
-    local save="$BOOKMARK_SAVE_DIR/$1/.save/`date '+%Y.%m.%d-%H:%M:%S'`" 
+    local save="$BOOKMARK_SAVE_DIR/$1/.save/`date '+%Y.%m.%d-%H:%M:%S'`"
     mkdir -p "$save"
     mv "$BOOKMARK_SAVE_DIR/$1"/* "$save"/
     echo "Saved previous version of $1 in $save"
@@ -123,44 +117,62 @@ function bsave ()
 
   local i=
   for i in $bmlist; do
-    local p="echo \$${i}"
+    local p="echo \$${i}" ## there probably was a good reason for doing this???
     local dir="`eval $p`"
-    echo "$dir" > "$BOOKMARK_SAVE_DIR/$1/$i"
+    echo "export $i=\"$dir\"" >> "$BOOKMARK_SAVE_DIR/$1/all"
   done
+  echo "bmlist=\"$bmlist\"" >> "$BOOKMARK_SAVE_DIR/$1/all"
+
+  export BOOKMARK_ENV="$1"
 }
 
 # load bookmark session
 function bload ()
 {
   if [ -z "$1" ]; then
-    echo $BOOKMARK_ERROR_COLOR Please give a session name. $TEST_NEUTRAL
+    echo $BOOKMARK_ERROR_COLOR Please give a session name. $COLOR_RESET
     return
   fi
 
   export BOOKMARK_ENV="$1"
-
-  local i=
-  for i in "$BOOKMARK_SAVE_DIR/$1"/*; do
-    local n="`basename $i`"
-    local d="`cat $i`"
-    export $n="$d"
-  done
+  source "$BOOKMARK_SAVE_DIR/$1/all";
 }
 
 # remove bookmark session
 function brm_session ()
 {
   if [ -z "$1" ]; then
-    echo $BOOKMARK_ERROR_COLOR Please give a session name. $TEST_NEUTRAL
+    echo $BOOKMARK_ERROR_COLOR Please give a session name. $COLOR_RESET
     return
   fi
 
   rm -rf "$BOOKMARK_SAVE_DIR/$1"
 }
 
+function bmigrate()
+{
+  if [ -z "$1" ]; then
+    echo $BOOKMARK_ERROR_COLOR Please give a session name. $COLOR_RESET
+    return
+  fi
+
+  rm -rf "$BOOKMARK_SAVE_DIR/$1/.save"
+
+  _bmlist=`find "$BOOKMARK_SAVE_DIR/$1/" -type f -a ! -name all -a ! -name bmlist | sort -u | sed "s:$BOOKMARK_SAVE_DIR/$1/::"`
+
+  truncate -s 0 "$BOOKMARK_SAVE_DIR/$1/all"
+
+  for _bookmark in $_bmlist; do
+    local _path=`cat $BOOKMARK_SAVE_DIR/$1/$_bookmark`
+
+    echo "export $_bookmark=\"$_path\"" >> "$BOOKMARK_SAVE_DIR/$1/all"
+  done
+  echo "bmlist=\"$_bmlist\"" >> "$BOOKMARK_SAVE_DIR/$1/all"
+}
+
 function _bookmark_completion ()
 {
-  reply=(`echo $bmlist | sed -re 's/ $//'`)
+  reply=(`echo ${bmlist// /}`)
 }
 
 function _bookmark_session_completion ()
