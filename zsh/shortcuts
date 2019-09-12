@@ -1,0 +1,9 @@
+# Bindings 
+bindkey '^[[H'	beginning-of-line
+bindkey '^[[F'	end-of-line
+bindkey '^D'	delete-char
+
+bindkey '^[[1;5C' forward-word # [Ctrl-RightArrow] - move forward one word
+bindkey '^[[1;5D' backward-word # [Ctrl-LeftArrow] - move backward one word
+
+# vim:filetype=zsh
