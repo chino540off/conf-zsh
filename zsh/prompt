@@ -1,21 +1,5 @@
-# Prompt file
-
 # init
-autoload -U colors
 autoload -Uz vcs_info
-colors
-
-# set some colors
-
-for COLOR in RED GREEN YELLOW WHITE BLACK CYAN BLUE; do
-  eval PR_$COLOR='%{$fg[${(L)COLOR}]%}'        
-  eval PR_BRIGHT_$COLOR='%{$fg_bold[${(L)COLOR}]%}'
-done
-
-eval PR_PINK='%F{162}'
-eval PR_BRIGHT_PINK='%F{162}'
-
-PR_RESET="%{${reset_color}%}";  
 
 # set formats
 # %b - branchname
@@ -25,19 +9,18 @@ PR_RESET="%{${reset_color}%}";
 # %R - repository path
 # %S - path in the repository
 FMT_VCS="${PR_GREEN}(%s)${PR_RESET}"
-FMT_BRANCH="${PR_GREEN}[%b%u%c]${PR_RESET}"				# e.g. master¹²
-FMT_ACTION="(${PR_BRIGHT_RED}%a${PR_RESET}%)"   			# e.g. (rebase-i)
-FMT_PATH_PART1="${PR_BRIGHT_BLUE}%R${PR_RESET}"
-FMT_PATH_PART2="${PR_BRIGHT_BLUE}%S${PR_RESET}"
-FMT_PATH="${FMT_VCS}${FMT_PATH_PART1}${FMT_BRANCH}${FMT_PATH_PART2}"	# e.g. ~/repo/subdir
- 
+FMT_BRANCH="${PR_GREEN}[%b%u%c]${PR_RESET}"                           # e.g. master¹²
+FMT_ACTION="(${PR_BOLD_RED}%a${PR_RESET}%)"                           # e.g. (rebase-i)
+FMT_PATH_PART1="${PR_BOLD_BLUE}%R${PR_RESET}"
+FMT_PATH_PART2="${PR_BOLD_BLUE}%S${PR_RESET}"
+FMT_PATH="${FMT_VCS}${FMT_PATH_PART1}${FMT_BRANCH}${FMT_PATH_PART2}"  # e.g. ~/repo/subdir
+
 # check-for-changes can be really slow.
-# you should disable it, if you work with large repositories   
+# you should disable it, if you work with large repositories
 zstyle ':vcs_info:*:prompt:*' enable git svn hg
 zstyle ':vcs_info:*:prompt:*' check-for-changes true
-zstyle ':vcs_info:*:prompt:*' unstagedstr '¹'  				# display ¹ if there are unstaged changes
-zstyle ':vcs_info:*:prompt:*' stagedstr '²'    				# display ² if there are staged changes
-zstyle ':vcs_info:*:prompt:*' actionformats ""          "${FMT_PATH}"
+zstyle ':vcs_info:*:prompt:*' unstagedstr   "¹"                       # display ¹ if there are unstaged changes
+zstyle ':vcs_info:*:prompt:*' stagedstr     "²"                       # display ² if there are staged changes
 zstyle ':vcs_info:*:prompt:*' formats       ""          "${FMT_PATH}"
 zstyle ':vcs_info:*:prompt:*' actionformats ""          "${FMT_ACTION}${FMT_PATH}"
 zstyle ':vcs_info:*:prompt:*' nvcsformats   ""          "%~"
@@ -48,51 +31,46 @@ setopt prompt_subst
 
 typeset -A altchar
 set -A altchar ${(s..)terminfo[acsc]}
-PR_SET_CHARSET="%{$terminfo[enacs]%}"
-PR_SHIFT_IN="%{$terminfo[smacs]%}"
-PR_SHIFT_OUT="%{$terminfo[rmacs]%}"
-PR_HBAR=${altchar[q]:--}
-PR_EMPTY_HBAR=" "
-PR_ULCORNER=${altchar[l]:--}
-PR_LLCORNER=${altchar[m]:--}
-PR_LRCORNER=${altchar[j]:--}
-PR_URCORNER=${altchar[k]:--}
-little_line=$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT$clr
-big_line=$PR_SHIFT_IN$PR_HBAR${(e)PR_FILLBAR}$clr
-up_left_corner=$PR_SHIFT_IN$PR_ULCORNER$PR_HBAR$PR_SHIFT_OUT
-up_right_corner=$PR_SHIFT_IN$PR_HBAR$PR_URCORNER$PR_SHIFT_OUT
-under_left_corner=$PR_SHIFT_IN$PR_LLCORNER$PR_HBAR$PR_SHIFT_OUT
-under_right_corner=$PR_SHIFT_IN$PR_LRCORNER$PR_SHIFT_OUT
+
+local PR_SET_CHARSET="%{$terminfo[enacs]%}"
+local PR_SHIFT_IN="%{$terminfo[smacs]%}"
+local PR_SHIFT_OUT="%{$terminfo[rmacs]%}"
+local PR_HBAR=${altchar[q]:--}
+local PR_ULCORNER=${altchar[l]:--}
+local PR_LLCORNER=${altchar[m]:--}
+local PR_LRCORNER=${altchar[j]:--}
+local PR_URCORNER=${altchar[k]:--}
+local little_line=${PR_SHIFT_IN}${PR_HBAR}${PR_SHIFT_OUT}${clr}
+local big_line=${PR_SHIFT_IN}${PR_HBAR}${(e)PR_FILLBAR}${clr}
+local up_left_corner=${PR_SHIFT_IN}${PR_ULCORNER}${PR_HBAR}${PR_SHIFT_OUT}
+local up_right_corner=${PR_SHIFT_IN}${PR_HBAR}${PR_URCORNER}${PR_SHIFT_OUT}
+local under_left_corner=${PR_SHIFT_IN}${PR_LLCORNER}${PR_HBAR}${PR_SHIFT_OUT}
+local under_right_corner=${PR_SHIFT_IN}${PR_LRCORNER}${PR_SHIFT_OUT}
+
+local env_sep="${PR_WHITE}:${PR_RESET}"
+local at="${PR_BOLD_WHITE}@${PR_RESET}"
+local time_fmt="%H:%M"
 
 function precmd()
 {
   vcs_info 'prompt'
 
-  # Term title
-  case $TERM in
-    *xterm*|*rxvt*|(dt|k|E)term)
-      print -Pn "\e]0;%n@%m:%~\a"
-      #preexec () { print -Pn "\e]0;%n@%m:%~\a $1" }
-    ;;
-  esac
-
-  # Bookmarks env
   if [ -n "$BOOKMARK_ENV" ]; then
-    export bm_env="${PR_BRIGHT_CYAN}:$BOOKMARK_ENV:${PR_RESET}"
+    export bm_env="${env_sep}${PR_BOLD_CYAN}$BOOKMARK_ENV${PR_RESET}"
   else
     export bm_env=""
   fi
 
   # Python Virtual env
   if [ -n "$VIRTUAL_ENV" ]; then
-    export virtual_env="${PR_BRIGHT_YELLOW}:`basename $VIRTUAL_ENV`:${PR_RESET}"
+    export virtual_env="${env_sep}${PR_BOLD_YELLOW}`basename $VIRTUAL_ENV`${PR_RESET}"
   else
     export virtual_env=""
   fi
 
   # NixOS derivation
   if [ -n "$name" ]; then
-    export nix_env="${PR_BRIGHT_PINK}:$name:${PR_RESET}"
+    export nix_env="${env_sep}${PR_BOLD_PINK}$name${PR_RESET}"
   else
     export nix_env=""
   fi
@@ -101,42 +79,46 @@ function precmd()
 function lprompt
 {
   local brackets=$1
-  local color1=$2 
-  local color2=$3 
-   
-  local bracket_open="${color1}${brackets[1]}${PR_RESET}"
-  local bracket_close="${color1}${brackets[2]}"         
-  local at="${PR_BRIGHT_WHITE}@${PR_RESET}"                       
+  local color=$2
 
-  if [ "$USER" != "root" -a "$USERNAME" != "root" ]; then 
-    local user_host="${PR_BRIGHT_WHITE}%n${at}${PR_BRIGHT_GREEN}%m${PR_RESET}"
+  local bopen="${brackets[1]}"
+  local bclose="${brackets[2]}"
+  local end_line="${color}${bclose}${little_line}${PR_RESET}"
+  local up_corner="${color}${up_left_corner}${bopen}${PR_RESET}"
+  local under_corner="${color}${under_left_corner}${bopen}${PR_RESET}"
+
+  if [ "$USER" != "root" -a "$USERNAME" != "root" ]; then
+    local user_host="${PR_BOLD_WHITE}%n${at}${PR_BOLD_GREEN}%m${PR_RESET}"
   else
-    local user_host="${PR_BRIGHT_RED}%n${at}${PR_BRIGHT_GREEN}%m${PR_RESET}"
+    local user_host="${PR_BOLD_RED}%n${at}${PR_BOLD_GREEN}%m${PR_RESET}"
   fi
-   
-  local vcs_cwd='${PR_BRIGHT_BLUE}${${vcs_info_msg_1_%%.}/$HOME/~}${PR_RESET}'
+
+  local envs='${nix_env}${bm_env}${virtual_env}'${env_sep}
+
+  local vcs_cwd='${PR_BOLD_BLUE}${${vcs_info_msg_1_%%.}/$HOME/~}${PR_RESET}'
   local cwd="${vcs_cwd}"
-  local my_prompt="${PR_BRIGHT_WHITE}>${PR_RESET}"
-   
-  PROMPT="$up_left_corner${PR_RESET}${bracket_open}"'${nix_env}'""'${bm_env}'""'${virtual_env}'"${cwd}${bracket_close}$little_line
-$under_left_corner${bracket_open}${user_host}${PR_RESET}${bracket_close}$little_line "
-} 
+  local my_prompt="${PR_BOLD_WHITE}>${PR_RESET}"
+
+  PROMPT="${up_corner}${envs}${cwd}${end_line}
+${under_corner}${user_host}${end_line} "
+}
 
 function rprompt
 {
   local brackets=$1
-  local color1=$2 
-  local color2=$3 
-   
-  local bracket_open="${color1}${brackets[1]}${PR_RESET}"
-  local bracket_close="${color1}${brackets[2]}${PR_RESET}"
-   
-  local time="%H:%M"
-  local timestamp="%(?..${PR_BRIGHT_RED}Err %?%b${PR_RESET} | )${PR_BRIGHT_YELLOW}%B%D{$time}"
-  RPROMPT="$little_line${PR_RESET}${bracket_open}${timestamp}${bracket_close}${PR_RESET}"
+  local color=$2
+
+  local bopen="${brackets[1]}"
+  local bclose="${brackets[2]}"
+  local begin_line="${color}${little_line}${bopen}${PR_RESET}"
+  local end_line="${color}${bclose}${PR_RESET}"
+
+  local timestamp="%(?..${PR_BOLD_RED}Err %?%b${PR_RESET} | )${PR_BOLD_YELLOW}%B%D{$time_fmt}"
+
+  RPROMPT="${begin_line}${timestamp}${end_line}"
 }
- 
-lprompt '()' $BR_BRIGHT_BLACK $PR_BRIGHT_WHITE
-rprompt '()' $BR_BRIGHT_BLACK $PR_BRIGHT_WHITE
+
+lprompt '()' ${PR_BOLD_WHITE}
+rprompt '()' ${PR_BOLD_WHITE}
 
 # vim:filetype=zsh
