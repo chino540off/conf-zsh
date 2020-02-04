@@ -1,5 +1,6 @@
 parrot="A0:14:3D:D3:93:E2"
 jambox="00:21:3C:9C:F0:53"
+devices=(parrot jambox)
 
 function blconnect()
 {
@@ -26,5 +27,14 @@ function blreconnect()
   bldisconnect $1
   blconnect $1
 }
+
+function _devices_completion ()
+{
+  reply=($devices)
+}
+
+compctl -K _devices_completion blconnect
+compctl -K _devices_completion bldisconnect
+compctl -K _devices_completion blreconnect
 
 # vim:filetype=zsh
