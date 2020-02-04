@@ -1,22 +1,23 @@
 # Completion
-  # Comp init
 autoload -U compinit
+fpath+=~/.zsh/completions
 compinit
-  # comp prompt
+
+# comp prompt
 zstyle ':completion:*:descriptions' format "%{$fg[red]%}.%{$reset_color%} %{$fg[yellow]%}%d%{$reset_color%}"
 zstyle ':completion:*:warnings' format "%{$fg[red]%}.%{$reset_color%} %{$fg[yellow]%}no match found%{$reset_color%}"
 zstyle ':completion:*' menu select
 zstyle ':completion:*' group-name ''
-  # options
+
+# options
 unsetopt list_ambiguous	  # mode
 setopt auto_remove_slash  # remove slash if it's at then end of the line
-#setopt glob_dots	  # include '.*' in comp
+setopt glob_dots	  # include '.*' in comp
 setopt chase_links	  # follow symlinks
-  # kill/killall
+
+# kill/killall
 zstyle ':completion:*:processes-names' command 'ps -e -o comm='
 zstyle ':completion:*:processes' command 'ps -au$USER'
-
-  # test
 
 # Correction
 setopt correctall
