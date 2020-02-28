@@ -10,6 +10,19 @@ BOOKMARK_SYM_COLUMN_COLOR=$COLOR_WHITE
 BOOKMARK_DIR_COLUMN_COLOR=$COLOR_GREEN
 BOOKMARK_SEARCH_COLOR="01;32"
 
+# add function _${cmd}_hook_${bookname}()
+# to call function after command
+function bm_hook_call()
+{
+  local cmd=$1
+  local name=$2
+  local function_name=_${cmd}_hook_${name}
+
+  if typeset -f $function_name > /dev/null; then
+    eval $function_name
+  fi
+}
+
 # add bookmark
 function bm ()
 {
@@ -136,6 +149,8 @@ function bload ()
 
   export BOOKMARK_ENV="$1"
   source "$BOOKMARK_SAVE_DIR/$1/all";
+
+  bm_hook_call bload $1
 }
 
 # remove bookmark session
