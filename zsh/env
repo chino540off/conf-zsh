@@ -35,4 +35,13 @@ fi
 
 export VIRTUAL_ENV_DISABLE_PROMPT=yes
 
+# neovim-remote
+export NVIM_LISTEN_ADDRESS=/tmp/nvim_socket
+# neovim-gtk
+export NVIM_GTK_NO_HEADERBAR=1
+export NVIM_GTK_PREFER_DARK_THEME=1
+export NVIM_GTK_NO_WINDOW_DECORATION=1
+
+export PASSWORD_STORE_X_SELECTION=primary
+
 # vim:filetype=zsh

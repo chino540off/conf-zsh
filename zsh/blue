@@ -1,6 +1,7 @@
-parrot="A0:14:3D:D3:93:E2"
 jambox="00:21:3C:9C:F0:53"
-devices=(parrot jambox)
+bose="60:AB:D2:DE:4B:45"
+sony="14:3F:A6:DB:16:6A"
+devices=(sony jambox)
 
 function blconnect()
 {

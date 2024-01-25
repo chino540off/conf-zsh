@@ -3,4 +3,17 @@ function dockviz ()
   docker run --rm -v /var/run/docker.sock:/var/run/docker.sock nate/dockviz $@
 }
 
+function dockprune()
+{
+  docker system prune --all --force
+
+  docker rm -f $(docker ps -qa --no-trunc --filter "status=exited")
+  docker rm $(docker ps -qa --no-trunc --filter "status=created")
+
+  docker rmi -f $(docker images --filter "dangling=true" -q --no-trunc)
+  docker rmi -f $(docker images | grep "none" | awk '/ / { print $3 }')
+
+  docker volume rm $(docker volume ls -qf dangling=true)
+}
+
 # vim:filetype=zsh

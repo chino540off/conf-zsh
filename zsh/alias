@@ -1,5 +1,18 @@
-# ls/df/du human readable
+function __alias() {
+  local cmd=$1
+  shift
 
+  local aliases=${1}
+  shift
+
+  local a="$1"
+  shift
+
+  eval echo Run $cmd '${'$aliases'['"$a"']:-'$a'}' $@
+  eval $cmd '${'$aliases'['"$a"']:-'$a'}' $@
+}
+
+# ls/df/du human readable
 if [ $SYSTEM = "Darwin" ]; then
 	alias ls='ls -G -h'
 else
@@ -16,8 +29,8 @@ alias df="df -h"
 
 alias ssh='ssh -o GSSAPIAuthentication=no'
 
-alias grep='grep --color=auto'
-alias egrep='egrep --color=auto'
+alias grep='grep --color=always'
+alias egrep='egrep --color=always'
 
 alias cp='rsync -a --progress'
 
@@ -25,5 +38,47 @@ alias g='git'
 alias gitk="gitk --all"
 
 alias ip='ip -c -h'
+
+alias curl='curl -w "\ntime_namelookup:  %{time_namelookup}\ntime_connect:  %{time_connect}\ntime_appconnect:  %{time_appconnect}\ntime_pretransfer:  %{time_pretransfer}\ntime_redirect:  %{time_redirect}\ntime_starttransfer:  %{time_starttransfer}\n----------\ntime_total:  %{time_total}\n"'
+alias kctx=kubectx
+
+typeset -A __kubectl_aliases
+__kubectl_aliases[a]="apply"
+__kubectl_aliases[d]="delete"
+
+function k() { __alias kubectl __kubectl_aliases $@ }
+compctl -k "(${(k)__kubectl_aliases})" k
+
+function dclean() {
+local IFS="
+"
+for arg in $@; do
+  for i in `docker images | \grep $arg`; do
+    local name=`echo "$i" | tr -s ' ' | cut -d' ' -f1`
+    local tag=`echo "$i" | tr -s ' ' | cut -d' ' -f2`
+
+    docker rmi ${name}:${tag}
+  done
+done
+}
+
+typeset -A __docker_aliases
+__docker_aliases=(
+  ['e']='exec -it'
+  ['k']="kill"
+  ['i']='image ls'
+  ['ip']='image prune'
+  ['n']='network ls'
+  ['p']="ps -a"
+  ['r']="run -it --rm -v /var/run/docker.sock:/var/run/docker.sock"
+  ['s']="stop"
+  ['sp']="system prune --volumes --force"
+  ['v']='volume ls'
+)
+
+function d() { __alias docker __docker_aliases $@ }
+compctl -k "(${(k)__docker_aliases})" d
+
+eval $(thefuck --alias)
 
 # vim:filetype=zsh

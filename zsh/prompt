@@ -8,11 +8,11 @@ autoload -Uz vcs_info
 # %a - action (e.g. rebase-i)
 # %R - repository path
 # %S - path in the repository
-FMT_VCS="${PR_GREEN}(%s)${PR_RESET}"
-FMT_BRANCH="${PR_GREEN}[%b%u%c]${PR_RESET}"                           # e.g. master¹²
+FMT_VCS="${PR_PINK}(%s)${PR_RESET}"
+FMT_BRANCH="${PR_PINK}[%b%u%c]${PR_RESET}"                           # e.g. master¹²
 FMT_ACTION="(${PR_BOLD_RED}%a${PR_RESET}%)"                           # e.g. (rebase-i)
-FMT_PATH_PART1="${PR_BOLD_BLUE}%R${PR_RESET}"
-FMT_PATH_PART2="${PR_BOLD_BLUE}%S${PR_RESET}"
+FMT_PATH_PART1="${PR_BOLD_LIGHT_PINK}%R${PR_RESET}"
+FMT_PATH_PART2="${PR_BOLD_LIGHT_PINK}%S${PR_RESET}"
 FMT_PATH="${FMT_VCS}${FMT_PATH_PART1}${FMT_BRANCH}${FMT_PATH_PART2}"  # e.g. ~/repo/subdir
 
 # check-for-changes can be really slow.
@@ -47,32 +47,42 @@ local up_right_corner=${PR_SHIFT_IN}${PR_HBAR}${PR_URCORNER}${PR_SHIFT_OUT}
 local under_left_corner=${PR_SHIFT_IN}${PR_LLCORNER}${PR_HBAR}${PR_SHIFT_OUT}
 local under_right_corner=${PR_SHIFT_IN}${PR_LRCORNER}${PR_SHIFT_OUT}
 
-local env_sep="${PR_WHITE}:${PR_RESET}"
-local at="${PR_BOLD_WHITE}@${PR_RESET}"
+local env_sep="${PR_GREY}:${PR_RESET}"
+local at="${PR_BOLD_GREY}@${PR_RESET}"
 local time_fmt="%H:%M"
+
+function _kubectx() {
+  which kubectx > /dev/null || return
+
+  kubectx --current > /dev/null || return
+  kubectx --current
+}
 
 function precmd()
 {
+  KUBECTX_ENV=$(_kubectx)
   vcs_info 'prompt'
 
   if [ -n "$BOOKMARK_ENV" ]; then
-    export bm_env="${env_sep}${PR_BOLD_CYAN}$BOOKMARK_ENV${PR_RESET}"
-  else
-    export bm_env=""
+    export bm_env="${env_sep}${PR_BOLD_ORANGE}$BOOKMARK_ENV${PR_RESET}"
   fi
 
   # Python Virtual env
   if [ -n "$VIRTUAL_ENV" ]; then
-    export virtual_env="${env_sep}${PR_BOLD_YELLOW}`basename $VIRTUAL_ENV`${PR_RESET}"
-  else
-    export virtual_env=""
+    export virtual_env="${env_sep}${PR_BOLD_LIGHT_YELLOW}`basename $VIRTUAL_ENV`${PR_RESET}"
   fi
 
   # NixOS derivation
   if [ -n "$name" ]; then
     export nix_env="${env_sep}${PR_BOLD_PINK}$name${PR_RESET}"
-  else
-    export nix_env=""
+  fi
+
+  if [ -f /.dockerenv ]; then
+    export docker_env="${env_sep}${PR_BOLD_BLUE}docker${PR_RESET}"
+  fi
+
+  if [ -n "$KUBECTX_ENV" ]; then
+    export kubectx_env="${env_sep}${PR_BOLD_PURPLE}$KUBECTX_ENV${PR_RESET}"
   fi
 }
 
@@ -88,16 +98,15 @@ function lprompt
   local under_corner="${color}${under_left_corner}${bopen}${PR_RESET}"
 
   if [ "$USER" != "root" -a "$USERNAME" != "root" ]; then
-    local user_host="${PR_BOLD_WHITE}%n${at}${PR_BOLD_GREEN}%m${PR_RESET}"
+    local user_host="${PR_BOLD_WHITE}%n${at}${PR_BOLD_PINK}%m${PR_RESET}"
   else
-    local user_host="${PR_BOLD_RED}%n${at}${PR_BOLD_GREEN}%m${PR_RESET}"
+    local user_host="${PR_BOLD_RED}%n${at}${PR_BOLD_PINK}%m${PR_RESET}"
   fi
 
-  local envs='${nix_env}${bm_env}${virtual_env}'${env_sep}
+  local envs='${kubectx_env}${docker_env}${nix_env}${bm_env}${virtual_env}'${env_sep}
 
-  local vcs_cwd='${PR_BOLD_BLUE}${${vcs_info_msg_1_%%.}/$HOME/~}${PR_RESET}'
+  local vcs_cwd='${PR_BOLD_LIGHT_PINK}${${vcs_info_msg_1_%%.}/$HOME/~}${PR_RESET}'
   local cwd="${vcs_cwd}"
-  local my_prompt="${PR_BOLD_WHITE}>${PR_RESET}"
 
   PROMPT="${up_corner}${envs}${cwd}${end_line}
 ${under_corner}${user_host}${end_line} "
@@ -113,12 +122,12 @@ function rprompt
   local begin_line="${color}${little_line}${bopen}${PR_RESET}"
   local end_line="${color}${bclose}${PR_RESET}"
 
-  local timestamp="%(?..${PR_BOLD_RED}Err %?%b${PR_RESET} | )${PR_BOLD_YELLOW}%B%D{$time_fmt}"
+  local timestamp="%(?..${PR_BOLD_RED}Err %?%b${PR_RESET} | )${PR_BOLD_MAGENTA}%B%D{$time_fmt}"
 
   RPROMPT="${begin_line}${timestamp}${end_line}"
 }
 
-lprompt '()' ${PR_BOLD_WHITE}
-rprompt '()' ${PR_BOLD_WHITE}
+lprompt '()' ${PR_BOLD_GREY}
+rprompt '()' ${PR_BOLD_GREY}
 
 # vim:filetype=zsh

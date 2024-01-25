@@ -123,4 +123,8 @@ function _make_completion ()
 
 compctl -K _make_completion m
 
+function timestamp() {
+  date +"%Y%m%d-%H%M%S.%6N"
+}
+
 # vim:filetype=zsh
