@@ -1,0 +1,82 @@
+# ~/.config/starship.toml
+
+# Use custom format
+format = '''
+[┌─\(:](struct)$container$direnv${directory}${custom.git_open}${git_branch}${git_metrics}${git_state}${custom.git_close}${custom.git_path}[\)─](struct)
+[└─\(](struct)${username}[@](struct)${hostname}[\)─](struct) '''
+
+# Wait 10 milliseconds for starship to check files under the current directory.
+scan_timeout = 10
+
+# Disable the blank line at the start of the prompt
+add_newline = false
+
+palette = 'custom'
+
+[palettes.custom]
+struct = '#FFFFFF'
+path = '#96C9F4'
+user = '#3FA2F6'
+hostname = '#0F67B1'
+branch = '#FAFFAF'
+
+[username]
+style_user = 'bold user'
+format = '[$user]($style)'
+disabled = false
+show_always = true
+
+[hostname]
+ssh_only = false
+format = '[$hostname](bold hostname)'
+disabled = false
+
+[directory]
+truncation_length = 256
+truncate_to_repo = false
+before_repo_root_style = 'bold path'
+repo_root_format = '[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)'
+repo_root_style = "bold path"
+
+[git_branch]
+ignore_branches = []
+format = '[$symbol$branch(:$remote_branch)]($style)'
+style = 'bold branch'
+symbol = '●'
+
+[git_metrics]
+added_style = 'bold blue'
+format = ':[+$added]($added_style)/[-$deleted]($deleted_style)'
+disabled = false
+
+[git_state]
+style = 'bold yellow'
+format = ':\([$state( $progress_current/$progress_total)]($style)\) '
+
+[custom.git_path]
+command = 'git rev-parse --show-prefix'
+format = '[$output]($style)'
+when = true
+style = "bold path"
+
+[custom.git_open]
+command = 'echo'
+format = '[\[]($style)'
+when = true
+require_repo = true
+style = "struct"
+
+[custom.git_close]
+command = 'echo'
+format = '[\]]($style)'
+when = true
+require_repo = true
+style = "struct"
+
+[direnv]
+disabled = false
+format = '[$symbol$loaded/$allowed]($style):'
+
+[container]
+format = '[${symbol} docker]($style):'
+symbol = '◲'
