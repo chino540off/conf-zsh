@@ -34,8 +34,21 @@ function _devices_completion ()
   reply=($devices)
 }
 
+mic-on () {
+  mac=$(eval "echo \$$1") 
+  pactl set-card-profile bluez_card.$(echo $mac | sed -e 's/:/_/g') headset-head-unit-msbc
+}
+
+mic-off () {
+  mac=$(eval "echo \$$1") 
+  pactl set-card-profile bluez_card.$(echo $mac | sed -e 's/:/_/g') a2dp-sink-sbc
+}
+
 compctl -K _devices_completion blconnect
 compctl -K _devices_completion bldisconnect
 compctl -K _devices_completion blreconnect
+compctl -K _devices_completion mic-on
+compctl -K _devices_completion mic-off
+
 
 # vim:filetype=zsh
