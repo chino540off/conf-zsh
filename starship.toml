@@ -2,7 +2,7 @@
 
 # Use custom format
 format = '''
-[┌─\(:](struct)$container$direnv${directory}${custom.git_open}${git_branch}${git_metrics}${git_state}${custom.git_close}${custom.git_path}[\)─](struct)
+[┌─\(:](struct)$kubernetes$container$direnv${directory}${custom.git_open}${git_branch}${git_metrics}${git_state}${custom.git_close}${custom.git_path}[\)$status─](struct)
 [└─\(](struct)${username}[@](struct)${hostname}[\)─](struct) '''
 
 # Wait 10 milliseconds for starship to check files under the current directory.
@@ -19,6 +19,7 @@ path = '#96C9F4'
 user = '#3FA2F6'
 hostname = '#0F67B1'
 branch = '#FAFFAF'
+k8s = '#3970e4'
 
 [username]
 style_user = 'bold user'
@@ -31,12 +32,23 @@ ssh_only = false
 format = '[$hostname](bold hostname)'
 disabled = false
 
+
+[status]
+style = 'bold red'
+symbol = ''
+success_symbol = ''
+format = '[─\(](struct)[$int]($style)[\)─](struct)'
+map_symbol = true
+disabled = false
+
 [directory]
 truncation_length = 256
 truncate_to_repo = false
 before_repo_root_style = 'bold path'
 repo_root_format = '[$before_root_path]($before_repo_root_style)[$repo_root]($repo_root_style)'
 repo_root_style = "bold path"
+format = '[$path]($style)'
+style = 'bold path'
 
 [git_branch]
 ignore_branches = []
@@ -80,3 +92,8 @@ format = '[$symbol$loaded/$allowed]($style):'
 [container]
 format = '[${symbol} docker]($style):'
 symbol = '◲'
+
+[kubernetes]
+format = '[($user)/($cluster)\($namespace\)]($style):'
+style = 'k8s'
+disabled = false
