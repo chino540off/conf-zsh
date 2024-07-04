@@ -2,7 +2,7 @@
 
 # Use custom format
 format = '''
-[┌─\(:](struct)$kubernetes$container$direnv${directory}${custom.git_open}${git_branch}${git_metrics}${git_state}${custom.git_close}${custom.git_path}[\)$status─](struct)
+[┌─\(:](struct)$kubernetes$container${custom.direnv_basename}${directory}${custom.git_open}${git_branch}${git_metrics}${git_state}${custom.git_close}${custom.git_path}[\)$status─](struct)
 [└─\(](struct)${username}[@](struct)${hostname}[\)─](struct) '''
 
 # Wait 10 milliseconds for starship to check files under the current directory.
@@ -20,6 +20,7 @@ user = '#3FA2F6'
 hostname = '#0F67B1'
 branch = '#FAFFAF'
 k8s = '#3970e4'
+direnv = '#FF9A00'
 
 [username]
 style_user = 'bold user'
@@ -85,9 +86,13 @@ when = true
 require_repo = true
 style = "struct"
 
-[direnv]
-disabled = false
-format = '[$symbol$loaded/$allowed]($style):'
+[custom.direnv_basename]
+command = 'basename $(dirname $DIRENV_FILE)'
+format = '[$output]($style):'
+#when = '''test $DIRENV_FILE'''
+when = true
+style = "bold direnv"
+
 
 [container]
 format = '[${symbol} docker]($style):'
