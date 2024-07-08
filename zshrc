@@ -93,6 +93,12 @@ zinit from"gh-r" as"program" mv"direnv* -> direnv" \
   pick"direnv" src="zhook.zsh" for \
 direnv/direnv
 
+# pyenv/pyenv
+zinit ice atclone'PYENV_ROOT="$PWD" ./libexec/pyenv init - > zpyenv.zsh' \
+    atinit'export PYENV_ROOT="$PWD"' atpull"%atclone" \
+    as'command' pick'bin/pyenv' src"zpyenv.zsh" nocompile'!'
+zinit light pyenv/pyenv
+
 # derailed/k9s
 zinit ice as"program" lucid from"gh-r" \
   pick"k9s"
@@ -128,6 +134,7 @@ zinit cdreplay -q
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export PAGER="bat"
 export EDITOR="nvim"
+export PATH="$HOME/local/bin:$PATH"
 
 # aliases
 alias ll='ls -l'
