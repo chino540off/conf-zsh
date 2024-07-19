@@ -116,14 +116,19 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 zinit light joshskidmore/zsh-fzf-history-search
+zinit light zpm-zsh/bookmarks
 
 # Load completions
 zinit ice as"completion"
 zinit snippet https://github.com/junegunn/fzf/blob/master/shell/completion.zsh
 zinit snippet https://github.com/junegunn/fzf/blob/master/shell/key-bindings.zsh
 
-zinit ice lucid nocompile wait'0e' nocompletions
+zinit ice lucid nocompile wait'1' nocompletions
 zinit load MenkeTechnologies/zsh-more-completions
+
+# thefuck
+zinit ice wait"1" lucid
+zinit light laggardkernel/zsh-thefuck
 
 autoload -Uz compinit && compinit
 
@@ -144,6 +149,8 @@ alias la='ls -a'
 alias ip='ip -c -h'
 
 alias g='git'
+alias gitk='gitk --all'
+
 alias d='docker'
 
 # extra modules
