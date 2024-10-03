@@ -167,5 +167,19 @@ export SAMNEFNI_CONFIG=~/.samnefni.toml
 alias d="samnefni exec docker"
 alias k="samnefni exec kubectl"
 
+# helpers
+function dclean() {
+local IFS="
+"
+for arg in $@; do
+  for i in `docker images | \grep $arg`; do
+    local name=`echo "$i" | tr -s ' ' | cut -d' ' -f1`
+    local tag=`echo "$i" | tr -s ' ' | cut -d' ' -f2`
+
+    docker rmi ${name}:${tag}
+  done
+done
+}
+
 # extra modules
 source ~/.zsh/blue
