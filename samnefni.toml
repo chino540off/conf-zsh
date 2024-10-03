@@ -1,0 +1,15 @@
+[aliases.docker]
+r = { args = [
+  "run",
+  "-it",
+  "--rm",
+  "-v",
+  "/var/run/docker.sock:/var/run/docker.sock",
+] }
+e = { args = ["exec", "-it"] }
+p = { args = ["ps", "-a"] }
+sp = { args = ["system", "prune", "--volumes", "--force"] }
+
+[aliases.kubectl]
+a = { args = ["apply"] }
+d = { args = ["delete"] }

@@ -109,6 +109,10 @@ zinit ice as"program" lucid from"gh-r" \
     bpick'kubectx;kubens'
 zinit light ahmetb/kubectx
 
+# chino540off/samnefni
+zinit ice as"program" lucid from"gh-r" \
+    pick'samnefni'
+zinit light chino540off/samnefni
 
 # Add in zsh plugins
 zinit light zsh-users/zsh-syntax-highlighting
@@ -129,6 +133,9 @@ zinit load MenkeTechnologies/zsh-more-completions
 # thefuck
 zinit ice wait"1" lucid
 zinit light laggardkernel/zsh-thefuck
+
+export ZSH_COMPLETION_LOCAL=~/.zsh/completions
+fpath=($ZSH_COMPLETION_LOCAL $fpath)
 
 autoload -Uz compinit && compinit
 
@@ -151,7 +158,9 @@ alias ip='ip -c -h'
 alias g='git'
 alias gitk='gitk --all'
 
-alias d='docker'
+export SAMNEFNI_CONFIG=~/.samnefni.toml
+alias d="samnefni exec docker"
+alias k="samnefni exec kubectl"
 
 # extra modules
 source ~/.zsh/blue
