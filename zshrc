@@ -109,6 +109,11 @@ zinit ice as"program" lucid from"gh-r" \
     bpick'kubectx;kubens'
 zinit light ahmetb/kubectx
 
+# neovim
+zinit ice as"program" lucid from'gh-r' \
+    pick'nvim-linux64/bin/nvim'
+zinit light neovim/neovim
+
 # chino540off/samnefni
 zinit ice as"program" lucid from"gh-r" \
     pick'samnefni'
