@@ -102,3 +102,4 @@ symbol = '◲'
 format = '[($user)/($cluster)\($namespace\)]($style):'
 style = 'k8s'
 disabled = false
+detect_env_vars = ["KUBECONFIG"]
