@@ -10,3 +10,11 @@ sp = "system prune --volumes --force"
 [aliases.kubectl]
 a = "apply -f..."
 d = "delete -f..."
+
+[aliases.nix]
+d = "develop -c /usr/bin/zsh"
+b = "build"
+
+[aliases.pass]
+g = "git"
+gen = "generate --in-place"

@@ -166,6 +166,8 @@ alias gitk='gitk --all'
 export SAMNEFNI_CONFIG=~/.samnefni.toml
 alias d="samnefni exec docker --"
 alias k="samnefni exec kubectl --"
+alias n="samnefni exec nix --"
+alias p="samnefni exec pass --"
 
 # helpers
 function dclean() {

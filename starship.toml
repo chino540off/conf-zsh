@@ -2,7 +2,7 @@
 
 # Use custom format
 format = '''
-[┌─\(:](struct)$kubernetes$container${custom.direnv_basename}${directory}${custom.git_open}${git_branch}${git_metrics}${git_state}${custom.git_close}${custom.git_path}[\)$status─](struct)
+[┌─\(](struct)$nix_shell$kubernetes$container${custom.direnv_basename}${directory}${custom.git_open}${git_branch}${git_metrics}${git_state}${custom.git_close}${custom.git_path}[\)$status─](struct)
 [└─\(](struct)${username}[@](struct)${hostname}[\)─](struct) '''
 
 # Wait 10 milliseconds for starship to check files under the current directory.
@@ -21,6 +21,7 @@ hostname = '#0F67B1'
 branch = '#FAFFAF'
 k8s = '#3970e4'
 direnv = '#FF9A00'
+nix = '#92FF8A'
 
 [username]
 style_user = 'bold user'
@@ -103,3 +104,11 @@ format = '[($user)/($cluster)\($namespace\)]($style):'
 style = 'k8s'
 disabled = false
 detect_env_vars = ["KUBECONFIG"]
+
+[nix_shell]
+disabled = false
+impure_msg = '[i](bold red)'
+pure_msg = '[p](bold green)'
+unknown_msg = '[u](bold yellow)'
+style = 'nix'
+format = '[nix\($state\)$name]($style):'
