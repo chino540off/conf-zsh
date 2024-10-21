@@ -1,10 +1,11 @@
 [aliases.docker]
+c = "rmi $(docker images | grep ... | tr -s ' ' | cut -d' ' -f 3)"
 e = "exec -it"
 i = "images"
 k = "kill"
-s = "stop"
 p = "ps -a"
 r = "run -it --rm -v /var/run/docker.sock:/var/run/docker.sock"
+s = "stop"
 sp = "system prune --volumes --force"
 
 [aliases.kubectl]
@@ -12,7 +13,7 @@ a = "apply -f..."
 d = "delete -f..."
 
 [aliases.nix]
-d = "develop -c /usr/bin/zsh"
+d = "develop -c $SHELL"
 b = "build"
 
 [aliases.pass]

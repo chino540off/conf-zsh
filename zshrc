@@ -139,10 +139,9 @@ zinit load MenkeTechnologies/zsh-more-completions
 zinit ice wait"1" lucid
 zinit light laggardkernel/zsh-thefuck
 
+setopt complete_aliases
 export ZSH_COMPLETION_LOCAL=~/.zsh/completions
 fpath=($ZSH_COMPLETION_LOCAL $fpath)
-
-autoload -Uz compinit && compinit
 
 zinit cdreplay -q
 
@@ -164,24 +163,24 @@ alias g='git'
 alias gitk='gitk --all'
 
 export SAMNEFNI_CONFIG=~/.samnefni.toml
-alias d="samnefni exec docker --"
-alias k="samnefni exec kubectl --"
-alias n="samnefni exec nix --"
-alias p="samnefni exec pass --"
+samnefni completion --shell zsh > ${ZSH_COMPLETION_LOCAL}/_samnefni
 
-# helpers
-function dclean() {
-local IFS="
-"
-for arg in $@; do
-  for i in `docker images | \grep $arg`; do
-    local name=`echo "$i" | tr -s ' ' | cut -d' ' -f1`
-    local tag=`echo "$i" | tr -s ' ' | cut -d' ' -f2`
+function samnefni-alias-zsh() {
+  local _alias=$1
+  local _command=$2
+  local _fpath=$3
 
-    docker rmi ${name}:${tag}
-  done
-done
+  alias $_alias="samnefni exec $_command --"
+  samnefni completion --shell zsh $_command > ${_fpath}/_samnefni-$_command
+  compdef _samnefni-$_command $_alias
 }
+
+samnefni-alias-zsh d docker   $ZSH_COMPLETION_LOCAL
+samnefni-alias-zsh k kubectl  $ZSH_COMPLETION_LOCAL
+samnefni-alias-zsh n nix      $ZSH_COMPLETION_LOCAL
+samnefni-alias-zsh p pass     $ZSH_COMPLETION_LOCAL
 
 # extra modules
 source ~/.zsh/blue
+
+autoload -Uz compinit && compinit
