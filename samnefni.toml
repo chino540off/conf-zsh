@@ -1,5 +1,5 @@
 [aliases.docker]
-c = "rmi $(docker images | grep ... | tr -s ' ' | cut -d' ' -f 3)"
+c = "rmi $(docker images | grep ... | tr -s ' ' | cut -d' ' -f 1,2 | sed -e 's/ /:/')"
 e = "exec -it"
 i = "images"
 k = "kill"
@@ -11,6 +11,10 @@ sp = "system prune --volumes --force"
 [aliases.kubectl]
 a = "apply -f..."
 d = "delete -f..."
+
+[aliases.kubectx]
+
+[aliases.kubens]
 
 [aliases.nix]
 d = "develop -c $SHELL"

@@ -18,10 +18,11 @@ source "${ZINIT_HOME}/zinit.zsh"
 
 # history
 export HISTFILE=~/.history
-export HISTSIZE=1000
-export SAVEHIST=1000
+export HISTSIZE=100000
 setopt hist_ignore_all_dups
 setopt hist_ignore_space
+setopt share_history
+setopt extended_history
 
 # bindings
 bindkey '^[[H'	beginning-of-line
@@ -79,13 +80,11 @@ zinit ice as"command" from"gh-r" \
   pick"bat/bat"
 zinit light sharkdp/bat
 export BAT_THEME="Monokai Extended Origin"
-alias cat="bat --style=numbers,changes --wrap never --color always"
 
 # ogham/exa
 zinit ice as"program" lucid from"gh-r" \
   mv"bin/exa* -> exa"
 zinit light ogham/exa
-alias ls="exa --git"
 
 # direnv/direnv
 zinit from"gh-r" as"program" mv"direnv* -> direnv" \
@@ -114,6 +113,11 @@ zinit ice as"program" lucid from'gh-r' \
     pick'nvim-linux64/bin/nvim'
 zinit light neovim/neovim
 
+# ripgrep
+zinit ice as"program" lucid from'gh-r' \
+    pick'**/rg'
+zinit light BurntSushi/ripgrep
+
 # chino540off/samnefni
 zinit ice as"program" lucid from"gh-r" \
     pick'samnefni'
@@ -125,7 +129,7 @@ zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
 zinit light joshskidmore/zsh-fzf-history-search
-zinit light zpm-zsh/bookmarks
+zinit light chino540off/bookmarks
 
 # Load completions
 zinit ice as"completion"
@@ -152,15 +156,28 @@ export PAGER="bat"
 export EDITOR="nvim"
 export PATH="$HOME/local/bin:$PATH"
 
+function alias-def() {
+  local _alias=$1
+  shift
+  local _cmd=$1
+  local _all="$@"
+
+  alias $_alias="$_all"
+  compdef $_alias=$_cmd
+}
+
 # aliases
-alias ll='ls -l'
-alias lla='ls -la'
-alias la='ls -a'
+alias cat="bat --style=numbers,changes --wrap never --color always"
 
-alias ip='ip -c -h'
+alias ls="exa --git"
+alias-def ll ls -l
+alias-def lla ls -la
+alias-def la ls -a
 
-alias g='git'
-alias gitk='gitk --all'
+alias-def ip ip -c -h
+
+alias-def g git
+alias-def gitk gitk --all
 
 export SAMNEFNI_CONFIG=~/.samnefni.toml
 samnefni completion --shell zsh > ${ZSH_COMPLETION_LOCAL}/_samnefni
@@ -175,10 +192,12 @@ function samnefni-alias-zsh() {
   compdef _samnefni-$_command $_alias
 }
 
-samnefni-alias-zsh d docker   $ZSH_COMPLETION_LOCAL
-samnefni-alias-zsh k kubectl  $ZSH_COMPLETION_LOCAL
-samnefni-alias-zsh n nix      $ZSH_COMPLETION_LOCAL
-samnefni-alias-zsh p pass     $ZSH_COMPLETION_LOCAL
+samnefni-alias-zsh d    docker      $ZSH_COMPLETION_LOCAL
+samnefni-alias-zsh k    kubectl     $ZSH_COMPLETION_LOCAL
+samnefni-alias-zsh kctx kubectx     $ZSH_COMPLETION_LOCAL
+samnefni-alias-zsh kns  kubens      $ZSH_COMPLETION_LOCAL
+samnefni-alias-zsh n    nix         $ZSH_COMPLETION_LOCAL
+samnefni-alias-zsh p    pass        $ZSH_COMPLETION_LOCAL
 
 # extra modules
 source ~/.zsh/blue

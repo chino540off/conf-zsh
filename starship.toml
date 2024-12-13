@@ -56,7 +56,7 @@ style = 'bold path'
 ignore_branches = []
 format = '[$symbol$branch(:$remote_branch)]($style)'
 style = 'bold branch'
-symbol = '●'
+symbol = ''
 
 [git_metrics]
 added_style = 'bold blue'
@@ -97,10 +97,11 @@ style = "bold direnv"
 
 [container]
 format = '[${symbol} docker]($style):'
-symbol = '◲'
+#symbol = '◲'
 
 [kubernetes]
-format = '[($user)/($cluster)\($namespace\)]($style):'
+format = '[$symbol($user)/($cluster)\($namespace\)]($style):'
+symbol = '☸'
 style = 'k8s'
 disabled = false
 detect_env_vars = ["KUBECONFIG"]
