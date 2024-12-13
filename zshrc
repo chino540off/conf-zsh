@@ -151,7 +151,8 @@ zinit cdreplay -q
 
 # env
 # std
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export MANROFFOPT="-c"
+export MANPAGER="sh -c 'col -bx | bat -plman'"
 export PAGER="bat"
 export EDITOR="nvim"
 export PATH="$HOME/local/bin:$PATH"
