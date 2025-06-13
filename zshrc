@@ -53,7 +53,7 @@ zinit load starship/starship
 
 # junegunn/fzf-bin
 export FILE_PREVIEW="bat --style=numbers,changes --wrap never --color always"
-export DIR_PREVIEW="exa --color=always --group-directories-first --oneline"
+export DIR_PREVIEW="eza --color=always --group-directories-first --oneline"
 export FZF_PREVIEW_COMMAND="${FILE_PREVIEW} {} || ${DIR_PREVIEW} {}"
 export FZF_COMMON_OPTIONS="
 --height 60% \
@@ -86,10 +86,10 @@ zinit ice as"command" from"gh-r" \
   pick"bat/bat"
 zinit light sharkdp/bat
 
-# ogham/exa
+# eza-community/eza
 zinit ice as"program" lucid from"gh-r" \
-  mv"bin/exa* -> exa"
-zinit light ogham/exa
+  mv"eza* -> eza"
+zinit light eza-community/eza
 
 # direnv/direnv
 zinit from"gh-r" as"program" mv"direnv* -> direnv" \
@@ -196,7 +196,7 @@ function alias-def() {
 # aliases
 alias cat="bat --style=numbers,changes --wrap never --color always"
 
-alias ls="exa --git"
+alias ls="eza --git"
 alias-def ll ls -l
 alias-def lla ls -la
 alias-def la ls -a
