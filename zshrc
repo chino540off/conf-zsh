@@ -18,11 +18,17 @@ source "${ZINIT_HOME}/zinit.zsh"
 
 # history
 export HISTFILE=~/.history
-export HISTSIZE=100000
-setopt hist_ignore_all_dups
-setopt hist_ignore_space
-setopt share_history
-setopt extended_history
+export HISTSIZE=5000000
+export SAVEHIST=$HISTSIZE
+
+setopt EXTENDED_HISTORY          # Write the history file in the ':start:elapsed;command' format.
+setopt HIST_EXPIRE_DUPS_FIRST    # Expire a duplicate event first when trimming history.
+setopt HIST_FIND_NO_DUPS         # Do not display a previously found event.
+setopt HIST_IGNORE_ALL_DUPS      # Delete an old recorded event if a new event is a duplicate.
+setopt HIST_IGNORE_DUPS          # Do not record an event that was just recorded again.
+setopt HIST_IGNORE_SPACE         # Do not record an event starting with a space.
+setopt HIST_SAVE_NO_DUPS         # Do not write a duplicate event to the history file.
+setopt SHARE_HISTORY             # Share history between all sessions.
 
 # bindings
 bindkey '^[[H'	beginning-of-line
@@ -79,7 +85,6 @@ zinit ice as"command" from"gh-r" \
   mv"bat* -> bat" \
   pick"bat/bat"
 zinit light sharkdp/bat
-export BAT_THEME="Monokai Extended Origin"
 
 # ogham/exa
 zinit ice as"program" lucid from"gh-r" \
@@ -108,15 +113,34 @@ zinit ice as"program" lucid from"gh-r" \
     bpick'kubectx;kubens'
 zinit light ahmetb/kubectx
 
+# kubernetes-sigs/krew
+zinit ice as"program" lucid from"gh-r" \
+    atclone'./krew* install krew' atpull'%atclone' \
+    atinit"export PATH=${KREW_ROOT:-$HOME/.krew}/bin:$PATH" \
+    pick'krew'
+zinit light kubernetes-sigs/krew
+
 # neovim
 zinit ice as"program" lucid from'gh-r' \
-    pick'nvim-linux64/bin/nvim'
+    bpick"*tar*" \
+    pick'*/bin/nvim'
 zinit light neovim/neovim
 
 # ripgrep
 zinit ice as"program" lucid from'gh-r' \
     pick'**/rg'
 zinit light BurntSushi/ripgrep
+
+# fd
+zinit ice as"program" lucid from'gh-r' \
+    atclone'cp -vf contrib/completion/_fd _fd' \
+    pick'**/fd'
+zinit light sharkdp/fd
+
+# dust
+zinit ice as"program" lucid from'gh-r' \
+    pick'**/dust'
+zinit light bootandy/dust
 
 # chino540off/samnefni
 zinit ice as"program" lucid from"gh-r" \
@@ -156,6 +180,8 @@ export MANPAGER="sh -c 'col -bx | bat -plman'"
 export PAGER="bat"
 export EDITOR="nvim"
 export PATH="$HOME/local/bin:$PATH"
+
+autoload -Uz compinit && compinit
 
 function alias-def() {
   local _alias=$1
@@ -202,5 +228,3 @@ samnefni-alias-zsh p    pass        $ZSH_COMPLETION_LOCAL
 
 # extra modules
 source ~/.zsh/blue
-
-autoload -Uz compinit && compinit

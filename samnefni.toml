@@ -2,15 +2,22 @@
 c = "rmi $(docker images | grep ... | tr -s ' ' | cut -d' ' -f 1,2 | sed -e 's/ /:/')"
 e = "exec -it"
 i = "images"
+l = "logs"
+lf = "logs -f"
 k = "kill"
 p = "ps -a"
 r = "run -it --rm -v /var/run/docker.sock:/var/run/docker.sock"
 s = "stop"
 sp = "system prune --volumes --force"
+cu = "compose up --build --detach"
+cd = "compose down --rmi local --volumes"
 
 [aliases.kubectl]
-a = "apply -f..."
-d = "delete -f..."
+gs = "get secret ... -o go-template='{{range $k,$v := .data}}{{printf \"%s: \" $k}}{{if not $v}}{{$v}}{{else}}{{$v | base64decode}}{{end}}{{\"\\n\"}}{{end}}'"
+af = "apply -f..."
+df = "delete -f..."
+g = "get"
+cs = "create secret generic --save-config --dry-run=client -o yaml ... | kubectl apply -f -"
 
 [aliases.kubectx]
 

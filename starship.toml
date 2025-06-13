@@ -2,7 +2,7 @@
 
 # Use custom format
 format = '''
-[┌─\(](struct)$nix_shell$kubernetes$container${custom.direnv_basename}${directory}${custom.git_open}${git_branch}${git_metrics}${git_state}${custom.git_close}${custom.git_path}[\)$status─](struct)
+[┌─\(](struct)$nix_shell$kubernetes$container${custom.direnv_basename}${directory}${custom.git_open}${git_branch}${git_commit}${git_metrics}${git_state}${custom.git_close}${custom.git_path}[\)$status─](struct)
 [└─\(](struct)${username}[@](struct)${hostname}[\)─](struct) '''
 
 # Wait 10 milliseconds for starship to check files under the current directory.
@@ -19,6 +19,7 @@ path = '#96C9F4'
 user = '#3FA2F6'
 hostname = '#0F67B1'
 branch = '#FAFFAF'
+commit = '#FFCC00'
 k8s = '#3970e4'
 direnv = '#FF9A00'
 nix = '#92FF8A'
@@ -62,6 +63,13 @@ symbol = ''
 added_style = 'bold blue'
 format = ':[+$added]($added_style)/[-$deleted]($deleted_style)'
 disabled = false
+
+[git_commit]
+commit_hash_length = 6
+format = ':[\($hash $tag\)]($style)'
+style = 'bold commit'
+tag_symbol = ''
+tag_disabled = false
 
 [git_state]
 style = 'bold yellow'
