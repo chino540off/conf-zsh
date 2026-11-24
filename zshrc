@@ -117,14 +117,25 @@ zinit light ahmetb/kubectx
 zinit ice as"program" lucid from"gh-r" \
     atclone'./krew* install krew' atpull'%atclone' \
     atinit"export PATH=${KREW_ROOT:-$HOME/.krew}/bin:$PATH" \
-    pick'krew'
+    mv"krew* -> krew"
 zinit light kubernetes-sigs/krew
+
+# kubernetes-sigs/kind
+zinit ice as"program" lucid from"gh-r" \
+  mv"kind* -> kind"
+zinit light kubernetes-sigs/kind
 
 # neovim
 zinit ice as"program" lucid from'gh-r' \
     bpick"*tar*" \
     pick'*/bin/nvim'
-zinit light neovim/neovim
+if [ $(uname -s) = "Linux" ]; then
+  zinit light neovim/neovim-releases
+elif [ $(uname -s) = "Darwin" ]; then
+  zinit light neovim/neovim
+else
+  echo "Unsupported system to install neovim"
+fi
 
 # ripgrep
 zinit ice as"program" lucid from'gh-r' \
@@ -141,6 +152,7 @@ zinit light sharkdp/fd
 zinit ice as"program" lucid from'gh-r' \
     pick'**/dust'
 zinit light bootandy/dust
+alias du=dust
 
 # chino540off/samnefni
 zinit ice as"program" lucid from"gh-r" \
@@ -171,7 +183,7 @@ setopt complete_aliases
 export ZSH_COMPLETION_LOCAL=~/.zsh/completions
 fpath=($ZSH_COMPLETION_LOCAL $fpath)
 
-zinit cdreplay -q
+autoload -U +X compinit && compinit
 
 # env
 # std
@@ -179,9 +191,7 @@ export MANROFFOPT="-c"
 export MANPAGER="sh -c 'col -bx | bat -plman'"
 export PAGER="bat"
 export EDITOR="nvim"
-export PATH="$HOME/local/bin:$PATH"
-
-autoload -Uz compinit && compinit
+export PATH="$HOME/.local/bin:$PATH"
 
 function alias-def() {
   local _alias=$1
@@ -215,7 +225,7 @@ function samnefni-alias-zsh() {
   local _fpath=$3
 
   alias $_alias="samnefni exec $_command --"
-  samnefni completion --shell zsh $_command > ${_fpath}/_samnefni-$_command
+  source <(samnefni completion --shell zsh $_command)
   compdef _samnefni-$_command $_alias
 }
 
@@ -226,5 +236,11 @@ samnefni-alias-zsh kns  kubens      $ZSH_COMPLETION_LOCAL
 samnefni-alias-zsh n    nix         $ZSH_COMPLETION_LOCAL
 samnefni-alias-zsh p    pass        $ZSH_COMPLETION_LOCAL
 
+zinit cdreplay -q
+
 # extra modules
 source ~/.zsh/blue
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
